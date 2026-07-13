@@ -1,0 +1,2158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Murath Musni — IT Executive & Network Engineer • 3D Cinematic Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/dist/cannon-es.js"></script>
+<style>
+  :root {
+    --bg: #0a0d12;
+    --bg2: #0f1318;
+    --bg3: #141920;
+    --surface: #1a2030;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --accent: #00d4aa;
+    --accent2: #0098ff;
+    --accent3: #7c3aed;
+    --text: #e8eaf0;
+    --muted: #7a8499;
+    --muted2: #4a5568;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Inter', sans-serif;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --glow: 0 0 40px 20px rgba(0,212,170,0.15);
+    --glow-strong: 0 0 80px 40px rgba(0,152,255,0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+    perspective: 1000px;
+  }
+
+  /* ──── CANVAS BACKGROUND ──── */
+  #canvas-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(circle at 20% 50%, rgba(0,212,170,0.03) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(0,152,255,0.02) 0%, transparent 50%),
+      radial-gradient(circle at 40% 20%, rgba(124,58,237,0.02) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+    animation: atmosphericShift 12s ease-in-out infinite;
+  }
+
+  @keyframes atmosphericShift {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { 
+    background: var(--accent); 
+    border-radius: 4px;
+    box-shadow: inset 0 0 10px rgba(0,212,170,0.3);
+  }
+
+  /* ── MAIN CONTENT LAYER ── */
+  main {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2.5rem;
+    background: linear-gradient(180deg, rgba(10,13,18,0.95) 0%, rgba(10,13,18,0.6) 100%);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    animation: slideDown 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  @keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .nav-logo {
+    font-family: var(--mono); font-size: 13px;
+    color: var(--accent); letter-spacing: 0.08em;
+    text-shadow: 0 0 20px rgba(0,212,170,0.4);
+    font-weight: 600;
+  }
+
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+
+  .nav-links a {
+    font-size: 13px; color: var(--muted); text-decoration: none;
+    letter-spacing: 0.03em; transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
+    padding: 6px 12px;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transform: translateX(-50%);
+    transition: width 0.3s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 0 15px rgba(0,212,170,0.5);
+  }
+
+  .nav-links a:hover::after { width: 100%; }
+  .nav-links a:hover { color: var(--text); text-shadow: 0 0 20px rgba(0,152,255,0.3); }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh; display: flex; align-items: center;
+    padding: 7rem 2.5rem 4rem;
+    position: relative; overflow: hidden;
+    background: linear-gradient(135deg, 
+      rgba(0,212,170,0.02) 0%,
+      rgba(0,152,255,0.01) 50%,
+      rgba(124,58,237,0.02) 100%);
+  }
+
+  .hero-layers {
+    position: absolute; inset: 0; z-index: 0;
+  }
+
+  .hero-grid {
+    position: absolute; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(rgba(0,212,170,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,170,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridFlow 20s linear infinite;
+  }
+
+  @keyframes gridFlow {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(60px); }
+  }
+
+  .hero-glow {
+    position: absolute; top: 20%; left: 30%;
+    width: 800px; height: 800px;
+    background: radial-gradient(ellipse at center, 
+      rgba(0,152,255,0.1) 0%, 
+      rgba(0,212,170,0.05) 30%,
+      transparent 70%);
+    z-index: 0;
+    filter: blur(40px);
+    animation: glowPulse 6s ease-in-out infinite;
+  }
+
+  @keyframes glowPulse {
+    0%, 100% { transform: scale(1) translateX(0); opacity: 0.6; }
+    50% { transform: scale(1.1) translateX(20px); opacity: 0.8; }
+  }
+
+  .hero-glow::after {
+    content: '';
+    position: absolute;
+    inset: -50px;
+    background: radial-gradient(circle, 
+      rgba(124,58,237,0.05) 0%,
+      transparent 70%);
+    filter: blur(60px);
+    animation: glowPulse 8s ease-in-out infinite reverse;
+  }
+
+  .hero-content { 
+    position: relative; z-index: 10; max-width: 720px; 
+    animation: fadeInUp 1s ease-out 0.2s both;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em;
+    color: var(--accent); border: 1px solid rgba(0,212,170,0.3);
+    background: rgba(0,212,170,0.08); 
+    padding: 8px 16px;
+    border-radius: 100px; margin-bottom: 2rem;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    box-shadow: inset 0 0 20px rgba(0,212,170,0.1);
+  }
+
+  .hero-tag:hover {
+    border-color: rgba(0,212,170,0.6);
+    background: rgba(0,212,170,0.12);
+    transform: translateY(-2px);
+    box-shadow: inset 0 0 30px rgba(0,212,170,0.2), 0 10px 30px rgba(0,212,170,0.2);
+  }
+
+  .hero-tag::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent); animation: pulse 2s infinite;
+    box-shadow: 0 0 10px rgba(0,212,170,0.8);
+  }
+
+  @keyframes pulse { 
+    0%, 100% { opacity: 1; box-shadow: 0 0 10px rgba(0,212,170,0.8), 0 0 20px rgba(0,212,170,0.4); }
+    50% { opacity: 0.3; box-shadow: 0 0 5px rgba(0,212,170,0.4); }
+  }
+
+  h1 {
+    font-size: clamp(2.8rem, 6vw, 5.2rem);
+    font-weight: 700; line-height: 1.05; letter-spacing: -0.03em;
+    margin-bottom: 1.5rem; color: #fff;
+    background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 30px rgba(0,212,170,0.3));
+  }
+
+  h1 span { 
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 40px rgba(0,212,170,0.5));
+  }
+  .hero-sub {
+    font-size: 1.1rem; color: var(--muted); max-width: 520px;
+    line-height: 1.7; margin-bottom: 2.5rem;
+    animation: fadeInUp 1s ease-out 0.4s both;
+  }
+
+  .hero-ctas { 
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    animation: fadeInUp 1s ease-out 0.6s both;
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 32px; border-radius: var(--radius);
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    text-decoration: none; transition: all 0.3s cubic-bezier(0.4,0,0.2,1); 
+    letter-spacing: 0.02em;
+    border: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+  }
+
+  .btn:hover::before { transform: translateX(100%); }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent) 0%, #00b89f 100%);
+    color: #0a0d12;
+    box-shadow: 0 10px 30px rgba(0,212,170,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+
+  .btn-primary:hover { 
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px rgba(0,212,170,0.5), inset 0 1px 0 rgba(255,255,255,0.3);
+  }
+
+  .btn-ghost {
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    border: 1px solid var(--border2);
+    backdrop-filter: blur(10px);
+    box-shadow: inset 0 0 20px rgba(255,255,255,0.05);
+  }
+
+  .btn-ghost:hover { 
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,212,170,0.1);
+    box-shadow: inset 0 0 20px rgba(0,212,170,0.2), 0 0 30px rgba(0,212,170,0.3);
+    transform: translateY(-2px);
+  }
+
+  .hero-stats {
+    display: flex; gap: 3rem; margin-top: 4rem;
+    border-top: 1px solid var(--border); padding-top: 2rem;
+    animation: fadeInUp 1s ease-out 0.8s both;
+  }
+
+  .stat-num {
+    font-family: var(--mono); font-size: 2.5rem; font-weight: 700;
+    background: linear-gradient(135deg, #fff 0%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+  }
+
+  .stat-num span { 
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .stat-label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 8rem 2.5rem; max-width: 1100px; margin: 0 auto;
+    position: relative;
+    animation: fadeInOnScroll 1s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes fadeInOnScroll {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-label {
+    display: flex; align-items: center; gap: 12px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+    color: var(--accent); text-transform: uppercase; margin-bottom: 3rem;
+    text-shadow: 0 0 20px rgba(0,212,170,0.3);
+  }
+
+  .section-label::after {
+    content: ''; flex: 1; height: 1px; 
+    background: linear-gradient(90deg, var(--border2) 0%, transparent 100%);
+    max-width: 60px;
+  }
+
+  h2 {
+    font-size: clamp(1.8rem, 3vw, 3.2rem); font-weight: 700; 
+    letter-spacing: -0.02em; color: #fff; margin-bottom: 1rem;
+    background: linear-gradient(135deg, #fff 0%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  h3 { font-size: 1rem; font-weight: 600; color: var(--text); }
+
+  /* ── SKILLS ── */
+  .skills-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 2rem; margin-top: 3rem;
+  }
+
+  .skill-card {
+    background: linear-gradient(135deg, rgba(26,32,48,0.8) 0%, rgba(20,25,32,0.4) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 2rem;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, 
+      rgba(0,212,170,0.1) 0%,
+      transparent 50%,
+      rgba(0,152,255,0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .skill-card:hover {
+    border-color: rgba(0,212,170,0.5);
+    transform: translateY(-8px);
+    box-shadow: 
+      0 20px 50px rgba(0,212,170,0.2),
+      inset 0 1px 20px rgba(0,212,170,0.1);
+  }
+
+  .skill-card:hover::before { opacity: 1; }
+
+  .skill-icon {
+    width: 56px; height: 56px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; margin-bottom: 1.25rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  }
+
+  .skill-card:hover .skill-icon {
+    transform: scale(1.15) rotateY(10deg);
+  }
+
+  .skill-icon.teal {
+    background: linear-gradient(135deg, rgba(0,212,170,0.2) 0%, rgba(0,212,170,0.05) 100%);
+    color: var(--accent);
+    box-shadow: 0 10px 30px rgba(0,212,170,0.3);
+  }
+
+  .skill-icon.blue {
+    background: linear-gradient(135deg, rgba(0,152,255,0.2) 0%, rgba(0,152,255,0.05) 100%);
+    color: var(--accent2);
+    box-shadow: 0 10px 30px rgba(0,152,255,0.3);
+  }
+
+  .skill-icon.purple {
+    background: linear-gradient(135deg, rgba(124,58,237,0.2) 0%, rgba(124,58,237,0.05) 100%);
+    color: var(--accent3);
+    box-shadow: 0 10px 30px rgba(124,58,237,0.3);
+  }
+
+  .skill-icon.orange {
+    background: linear-gradient(135deg, rgba(255,160,0,0.2) 0%, rgba(255,160,0,0.05) 100%);
+    color: #ffa000;
+    box-shadow: 0 10px 30px rgba(255,160,0,0.3);
+  }
+
+  .skill-card h3 { font-size: 1rem; margin-bottom: 0.75rem; }
+
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 0.75rem; }
+
+  .tag {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em;
+    padding: 4px 12px; border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+    cursor: default;
+  }
+
+  .tag:hover {
+    background: rgba(0,212,170,0.1);
+    border-color: rgba(0,212,170,0.3);
+    color: var(--accent);
+  }
+
+  /* ── EXPERIENCE ── */
+  .exp-timeline { margin-top: 3rem; position: relative; padding-left: 2rem; }
+
+  .exp-timeline::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 2px; background: linear-gradient(180deg, var(--accent) 0%, var(--accent2) 50%, var(--accent3) 100%);
+    box-shadow: 0 0 20px rgba(0,212,170,0.5);
+  }
+
+  .exp-item {
+    padding-left: 2.5rem; margin-bottom: 3.5rem; position: relative;
+    animation: slideInLeft 0.6s ease-out forwards;
+    opacity: 0;
+  }
+
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-30px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  .exp-item::before {
+    content: ''; position: absolute; left: -10px; top: 6px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    border: 3px solid var(--bg);
+    box-shadow: 0 0 20px rgba(0,212,170,0.6), inset 0 0 10px rgba(255,255,255,0.2);
+  }
+
+  .exp-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem;
+  }
+
+  .exp-role {
+    font-size: 1.1rem; font-weight: 700; color: #fff;
+    background: linear-gradient(135deg, #fff 0%, var(--accent2) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .exp-company { color: var(--accent); font-size: 0.95rem; font-weight: 600; margin-bottom: 0.3rem; }
+
+  .exp-date {
+    font-family: var(--mono); font-size: 11px; color: var(--muted);
+    border: 1px solid rgba(0,212,170,0.2); padding: 4px 12px;
+    border-radius: 100px; white-space: nowrap;
+    background: rgba(0,212,170,0.05);
+    transition: all 0.3s ease;
+  }
+
+  .exp-item:hover .exp-date {
+    background: rgba(0,212,170,0.1);
+    border-color: rgba(0,212,170,0.4);
+  }
+
+  .exp-list { list-style: none; margin-top: 0.75rem; }
+
+  .exp-list li {
+    font-size: 0.88rem; color: var(--muted); padding: 6px 0;
+    padding-left: 1.5rem; position: relative; line-height: 1.6;
+    transition: all 0.2s ease;
+  }
+
+  .exp-list li::before {
+    content: '›'; position: absolute; left: 0; color: var(--accent);
+    font-weight: bold; font-size: 1.1rem;
+  }
+
+  .exp-item:hover .exp-list li { color: var(--text); }
+
+  /* ── PROJECTS ── */
+  .projects-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem; margin-top: 3rem;
+  }
+
+  .project-card {
+    background: linear-gradient(135deg, rgba(26,32,48,0.6) 0%, rgba(15,19,24,0.4) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 2rem;
+    transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, 
+      rgba(0,212,170,0) 0%,
+      rgba(0,212,170,0.1) 50%,
+      rgba(0,152,255,0) 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+
+  .project-card::after {
+    content: '';
+    position: absolute;
+    inset: -100%;
+    background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+      rgba(0,212,170,0.1) 0%,
+      transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .project-card:hover {
+    border-color: rgba(0,212,170,0.5);
+    transform: translateY(-12px);
+    box-shadow: 
+      0 30px 60px rgba(0,212,170,0.2),
+      inset 0 1px 20px rgba(0,212,170,0.1);
+  }
+
+  .project-card:hover::before { opacity: 1; }
+  .project-card:hover::after { opacity: 1; }
+
+  .project-num {
+    font-family: var(--mono); font-size: 11px; color: var(--muted2);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .project-card h3 { font-size: 1.15rem; font-weight: 700; color: #fff; margin-bottom: 0.8rem; }
+
+  .project-desc { font-size: 0.86rem; color: var(--muted); line-height: 1.7; margin-bottom: 1.5rem; flex: 1; }
+
+  .project-tools { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .project-tool {
+    font-family: var(--mono); font-size: 10px;
+    padding: 5px 12px; border-radius: 6px;
+    background: rgba(0,152,255,0.1);
+    color: var(--accent2);
+    border: 1px solid rgba(0,152,255,0.2);
+    transition: all 0.2s ease;
+    cursor: default;
+  }
+
+  .project-tool:hover {
+    background: rgba(0,152,255,0.2);
+    border-color: rgba(0,152,255,0.4);
+    transform: translateY(-2px);
+  }
+
+  /* ── CERTS / EDUCATION ── */
+  .cert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 3rem; }
+
+  .cert-card {
+    background: linear-gradient(135deg, rgba(26,32,48,0.7) 0%, rgba(20,25,32,0.3) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.75rem;
+    display: flex; gap: 1.25rem; align-items: flex-start;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+  }
+
+  .cert-card:hover {
+    border-color: rgba(0,212,170,0.4);
+    transform: translateY(-4px);
+    box-shadow: 0 15px 40px rgba(0,212,170,0.15);
+  }
+
+  .cert-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    margin-top: 6px; flex-shrink: 0;
+    box-shadow: 0 0 15px rgba(0,212,170,0.5);
+    animation: certPulse 2s ease-in-out infinite;
+  }
+
+  @keyframes certPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.2); opacity: 0.7; }
+  }
+
+  .cert-dot.wip {
+    background: linear-gradient(135deg, var(--accent2) 0%, var(--accent3) 100%);
+    box-shadow: 0 0 15px rgba(0,152,255,0.5);
+  }
+
+  .cert-title { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+  .cert-inst { font-size: 0.8rem; color: var(--muted); margin-top: 4px; }
+
+  .cert-badge {
+    font-family: var(--mono); font-size: 10px;
+    padding: 4px 10px; border-radius: 100px; margin-top: 8px;
+    display: inline-block;
+    transition: all 0.2s ease;
+  }
+
+  .cert-badge.earned {
+    background: rgba(0,212,170,0.15);
+    color: var(--accent);
+    border: 1px solid rgba(0,212,170,0.3);
+  }
+
+  .cert-badge.progress {
+    background: rgba(0,152,255,0.15);
+    color: var(--accent2);
+    border: 1px solid rgba(0,152,255,0.3);
+  }
+
+  /* ── CONTACT ── */
+  .contact-wrap {
+    background: linear-gradient(135deg, rgba(26,32,48,0.8) 0%, rgba(20,25,32,0.4) 100%);
+    border: 1px solid var(--border);
+    border-radius: 20px; padding: 3.5rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 3rem;
+    margin-top: 3rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3), inset 0 1px 20px rgba(0,212,170,0.1);
+  }
+
+  @media (max-width: 600px) { .contact-wrap { grid-template-columns: 1fr; padding: 2rem; } }
+
+  .contact-info h3 { font-size: 1.4rem; font-weight: 700; color: #fff; margin-bottom: 1rem; }
+
+  .contact-info p { font-size: 0.9rem; color: var(--muted); line-height: 1.8; }
+
+  .contact-links { margin-top: 1.75rem; display: flex; flex-direction: column; gap: 1rem; }
+
+  .contact-link {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 0.88rem; color: var(--muted); text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 8px 12px;
+    border-radius: 8px;
+  }
+
+  .contact-link:hover {
+    color: var(--accent);
+    background: rgba(0,212,170,0.1);
+    transform: translateX(4px);
+  }
+
+  .contact-link-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: linear-gradient(135deg, rgba(0,212,170,0.1) 0%, rgba(0,152,255,0.05) 100%);
+    border: 1px solid rgba(0,212,170,0.2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    color: var(--accent);
+    transition: all 0.3s ease;
+  }
+
+  .contact-link:hover .contact-link-icon {
+    background: linear-gradient(135deg, rgba(0,212,170,0.2) 0%, rgba(0,152,255,0.1) 100%);
+    border-color: rgba(0,212,170,0.4);
+    transform: scale(1.1);
+  }
+
+  .contact-form { display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
+
+  .form-group label { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; }
+
+  .form-group input, .form-group textarea {
+    background: rgba(10,13,18,0.5);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    color: var(--text); font-family: var(--sans); font-size: 0.88rem;
+    outline: none; transition: all 0.3s ease; resize: none;
+    backdrop-filter: blur(5px);
+  }
+
+  .form-group input::placeholder, .form-group textarea::placeholder {
+    color: var(--muted2);
+  }
+
+  .form-group input:focus, .form-group textarea:focus {
+    border-color: var(--accent);
+    background: rgba(0,212,170,0.05);
+    box-shadow: 0 0 20px rgba(0,212,170,0.2), inset 0 0 10px rgba(0,212,170,0.05);
+  }
+
+  .form-group textarea { min-height: 100px; }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 2.5rem;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 1.5rem;
+    font-family: var(--mono); font-size: 11px; color: var(--muted2);
+    background: rgba(10,13,18,0.8);
+    backdrop-filter: blur(10px);
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ─────────────────────────────────────────────────
+     ADMIN PORTAL — hidden until secret key combo
+  ───────────────────────────────────────────────── */
+  #admin-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    background: rgba(5,8,12,0.97); backdrop-filter: blur(20px);
+    flex-direction: column;
+  }
+  #admin-overlay.visible { display: flex; }
+
+  /* LOGIN */
+  #admin-login {
+    display: flex; align-items: center; justify-content: center;
+    flex: 1;
+  }
+  .login-box {
+    background: var(--bg2); border: 1px solid var(--border2);
+    border-radius: 16px; padding: 2.5rem; width: 100%; max-width: 380px;
+  }
+  .login-logo {
+    font-family: var(--mono); font-size: 11px; color: var(--accent);
+    letter-spacing: 0.1em; margin-bottom: 1.5rem; display: flex;
+    align-items: center; gap: 8px;
+  }
+  .login-logo::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+  }
+  .login-box h2 { font-size: 1.3rem; color: #fff; margin-bottom: 0.4rem; font-weight: 600; }
+  .login-box p { font-size: 0.85rem; color: var(--muted); margin-bottom: 1.75rem; }
+  .login-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1rem; }
+  .login-field label { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
+  .login-field input {
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: var(--radius-sm); padding: 11px 14px;
+    color: var(--text); font-family: var(--sans); font-size: 0.88rem;
+    outline: none; transition: border-color 0.2s;
+  }
+  .login-field input:focus { border-color: var(--accent); }
+  .login-error { font-size: 12px; color: #ff4d6d; margin-bottom: 1rem; display: none; }
+  .btn-login {
+    width: 100%; padding: 12px; background: var(--accent); color: #0a0d12;
+    border: none; border-radius: var(--radius-sm); font-size: 0.9rem;
+    font-weight: 600; cursor: pointer; transition: background 0.2s;
+    font-family: var(--sans);
+  }
+  .btn-login:hover { background: #00bfa0; }
+  .login-hint {
+    text-align: center; margin-top: 1rem;
+    font-size: 11px; color: var(--muted2); font-family: var(--mono);
+  }
+
+  /* ADMIN PANEL */
+  #admin-panel { display: none; flex-direction: column; height: 100vh; }
+  #admin-panel.visible { display: flex; }
+
+  .admin-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2rem; border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+  }
+  .admin-nav-left { display: flex; align-items: center; gap: 1.5rem; }
+  .admin-logo { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+  .admin-tabs { display: flex; gap: 0.25rem; }
+  .admin-tab {
+    padding: 6px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;
+    color: var(--muted); border: none; background: transparent; font-family: var(--sans);
+    transition: all 0.15s;
+  }
+  .admin-tab.active, .admin-tab:hover { background: var(--surface); color: var(--text); }
+  .admin-tab.active { color: var(--accent); }
+  .admin-actions { display: flex; gap: 0.75rem; align-items: center; }
+  .admin-close {
+    padding: 6px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;
+    color: var(--muted); border: 1px solid var(--border); background: transparent;
+    font-family: var(--sans); transition: all 0.15s;
+  }
+  .admin-close:hover { border-color: #ff4d6d; color: #ff4d6d; }
+
+  .admin-content { flex: 1; overflow-y: auto; padding: 2rem; }
+  .admin-pane { display: none; }
+  .admin-pane.active { display: block; }
+
+  /* admin cards */
+  .admin-stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .admin-stat {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.25rem;
+  }
+  .admin-stat-val { font-family: var(--mono); font-size: 1.8rem; font-weight: 500; color: #fff; }
+  .admin-stat-val span { color: var(--accent); }
+  .admin-stat-label { font-size: 11px; color: var(--muted); margin-top: 3px; }
+
+  .admin-section { margin-bottom: 2rem; }
+  .admin-section-title {
+    font-size: 12px; font-weight: 600; color: var(--muted);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    margin-bottom: 1rem; padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .admin-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; margin-bottom: 1rem;
+  }
+  .admin-table { width: 100%; border-collapse: collapse; }
+  .admin-table th {
+    background: var(--bg3); font-size: 11px; color: var(--muted);
+    letter-spacing: 0.05em; text-align: left; padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .admin-table td { padding: 12px 16px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
+  .admin-table tr:last-child td { border-bottom: none; }
+  .admin-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .status-pill {
+    display: inline-block; font-size: 10px; padding: 3px 9px;
+    border-radius: 100px; font-family: var(--mono);
+  }
+  .status-pill.green { background: rgba(0,212,170,0.1); color: var(--accent); }
+  .status-pill.blue { background: rgba(0,152,255,0.1); color: var(--accent2); }
+  .status-pill.orange { background: rgba(255,160,0,0.1); color: #ffa000; }
+
+  .admin-edit-form { padding: 1.5rem; display: grid; gap: 1rem; }
+  .admin-edit-form .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 600px) { .admin-edit-form .row { grid-template-columns: 1fr; } }
+  .admin-input-group { display: flex; flex-direction: column; gap: 6px; }
+  .admin-input-group label { font-size: 11px; color: var(--muted); }
+  .admin-input-group input, .admin-input-group textarea, .admin-input-group select {
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: var(--radius-sm); padding: 9px 12px;
+    color: var(--text); font-family: var(--sans); font-size: 0.85rem;
+    outline: none; transition: border-color 0.2s;
+  }
+  .admin-input-group input:focus, .admin-input-group textarea:focus,
+  .admin-input-group select:focus { border-color: var(--accent); }
+  .admin-input-group textarea { min-height: 80px; resize: vertical; }
+  .admin-input-group select option { background: var(--bg2); }
+  .btn-save {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 20px; background: var(--accent); color: #0a0d12;
+    border: none; border-radius: var(--radius-sm); font-size: 12px;
+    font-weight: 600; cursor: pointer; font-family: var(--sans);
+    transition: background 0.2s;
+  }
+  .btn-save:hover { background: #00bfa0; }
+  .btn-danger {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 20px; background: transparent; color: #ff4d6d;
+    border: 1px solid rgba(255,77,109,0.3); border-radius: var(--radius-sm);
+    font-size: 12px; font-weight: 500; cursor: pointer; font-family: var(--sans);
+    transition: all 0.2s;
+  }
+  .btn-danger:hover { background: rgba(255,77,109,0.1); }
+  .admin-btn-row { display: flex; gap: 0.75rem; padding: 0 1.5rem 1.5rem; }
+
+  .admin-log-entry {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px; border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .admin-log-entry:last-child { border-bottom: none; }
+  .log-time { font-family: var(--mono); color: var(--muted2); min-width: 140px; }
+  .log-msg { color: var(--text); }
+  .log-type { font-family: var(--mono); font-size: 10px; }
+
+  .save-toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 10000;
+    background: var(--surface); border: 1px solid rgba(0,212,170,0.3);
+    border-radius: 10px; padding: 14px 22px;
+    font-size: 13px; color: var(--accent); display: none;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp { from { opacity:0; transform:translateY(10px) } to { opacity:1; transform:translateY(0) } }
+
+  /* ─────────────────────────────────────────────────
+     RESPONSIVE DESIGN
+  ───────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.25rem; }
+    .nav-links { display: none; }
+    #hero { padding: 6rem 1.25rem 3rem; }
+    section { padding: 4rem 1.25rem; }
+    .hero-stats { gap: 1.5rem; }
+    .contact-wrap { grid-template-columns: 1fr; padding: 1.5rem; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .cert-grid { grid-template-columns: 1fr; }
+    h1 { font-size: 2.5rem; }
+    h2 { font-size: 1.8rem; }
+  }
+
+  /* ─────────────────────────────────────────────────
+     ADMIN PORTAL — hidden until secret key combo
+  ───────────────────────────────────────────────── */
+  #admin-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    background: rgba(5,8,12,0.98); backdrop-filter: blur(20px);
+    flex-direction: column;
+  }
+  #admin-overlay.visible { display: flex; }
+
+  /* LOGIN */
+  #admin-login {
+    display: flex; align-items: center; justify-content: center;
+    flex: 1;
+  }
+  .login-box {
+    background: linear-gradient(135deg, rgba(15,19,24,0.8) 0%, rgba(20,25,32,0.4) 100%);
+    border: 1px solid var(--border2);
+    border-radius: 20px; padding: 3rem; width: 100%; max-width: 420px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 20px rgba(0,212,170,0.1);
+  }
+  .login-logo {
+    font-family: var(--mono); font-size: 11px; color: var(--accent);
+    letter-spacing: 0.1em; margin-bottom: 1.5rem; display: flex;
+    align-items: center; gap: 8px;
+    text-shadow: 0 0 20px rgba(0,212,170,0.3);
+  }
+  .login-logo::before {
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 15px rgba(0,212,170,0.6);
+  }
+  .login-box h2 { font-size: 1.4rem; color: #fff; margin-bottom: 0.4rem; font-weight: 700; }
+  .login-box p { font-size: 0.85rem; color: var(--muted); margin-bottom: 2rem; }
+  .login-field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 1.25rem; }
+  .login-field label { font-size: 11px; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; }
+  .login-field input {
+    background: rgba(10,13,18,0.5); border: 1px solid var(--border2);
+    border-radius: var(--radius); padding: 12px 16px;
+    color: var(--text); font-family: var(--sans); font-size: 0.88rem;
+    outline: none; transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+  }
+  .login-field input:focus {
+    border-color: var(--accent);
+    background: rgba(0,212,170,0.05);
+    box-shadow: 0 0 20px rgba(0,212,170,0.2);
+  }
+  .login-error { font-size: 12px; color: #ff4d6d; margin-bottom: 1rem; display: none; }
+  .btn-login {
+    width: 100%; padding: 14px; background: linear-gradient(135deg, var(--accent) 0%, #00b89f 100%);
+    color: #0a0d12; border: none; border-radius: var(--radius); font-size: 0.9rem;
+    font-weight: 700; cursor: pointer; transition: all 0.3s ease;
+    font-family: var(--sans); box-shadow: 0 10px 30px rgba(0,212,170,0.3);
+  }
+  .btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(0,212,170,0.5);
+  }
+  .login-hint {
+    text-align: center; margin-top: 1.5rem;
+    font-size: 11px; color: var(--muted2); font-family: var(--mono);
+  }
+
+  /* ADMIN PANEL */
+  #admin-panel { display: none; flex-direction: column; height: 100vh; }
+  #admin-panel.visible { display: flex; }
+
+  .admin-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.25rem 2rem; border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--bg2) 0%, rgba(15,19,24,0.6) 100%);
+  }
+  .admin-nav-left { display: flex; align-items: center; gap: 1.5rem; }
+  .admin-logo { font-family: var(--mono); font-size: 12px; color: var(--accent); text-shadow: 0 0 15px rgba(0,212,170,0.3); }
+  .admin-tabs { display: flex; gap: 0.25rem; }
+  .admin-tab {
+    padding: 8px 18px; border-radius: 8px; font-size: 12px; cursor: pointer;
+    color: var(--muted); border: none; background: transparent; font-family: var(--sans);
+    transition: all 0.2s ease;
+  }
+  .admin-tab.active, .admin-tab:hover { background: rgba(0,212,170,0.1); color: var(--text); }
+  .admin-tab.active { color: var(--accent); text-shadow: 0 0 10px rgba(0,212,170,0.4); }
+  .admin-actions { display: flex; gap: 0.75rem; align-items: center; }
+  .admin-close {
+    padding: 8px 18px; border-radius: 8px; font-size: 12px; cursor: pointer;
+    color: var(--muted); border: 1px solid var(--border); background: transparent;
+    font-family: var(--sans); transition: all 0.2s ease;
+  }
+  .admin-close:hover { border-color: #ff4d6d; color: #ff4d6d; background: rgba(255,77,109,0.1); }
+
+  .admin-content { flex: 1; overflow-y: auto; padding: 2rem; }
+  .admin-pane { display: none; }
+  .admin-pane.active { display: block; animation: fadeIn 0.3s ease; }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* admin cards */
+  .admin-stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .admin-stat {
+    background: linear-gradient(135deg, rgba(26,32,48,0.6) 0%, rgba(20,25,32,0.3) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+  .admin-stat-val { font-family: var(--mono); font-size: 2rem; font-weight: 700; color: #fff; }
+  .admin-stat-val span { color: var(--accent); }
+  .admin-stat-label { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+  .admin-section { margin-bottom: 2.5rem; }
+  .admin-section-title {
+    font-size: 12px; font-weight: 700; color: var(--muted);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 1rem; padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .admin-card {
+    background: linear-gradient(135deg, rgba(26,32,48,0.5) 0%, rgba(20,25,32,0.2) 100%);
+    border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden; margin-bottom: 1rem;
+  }
+  .admin-table { width: 100%; border-collapse: collapse; }
+  .admin-table th {
+    background: rgba(10,13,18,0.5); font-size: 11px; color: var(--muted);
+    letter-spacing: 0.05em; text-align: left; padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .admin-table td { padding: 14px 16px; font-size: 13px; color: var(--text); border-bottom: 1px solid var(--border); }
+  .admin-table tr:last-child td { border-bottom: none; }
+  .admin-table tr:hover td { background: rgba(0,212,170,0.05); }
+  .status-pill {
+    display: inline-block; font-size: 10px; padding: 4px 11px;
+    border-radius: 100px; font-family: var(--mono); font-weight: 600;
+  }
+  .status-pill.green { background: rgba(0,212,170,0.15); color: var(--accent); border: 1px solid rgba(0,212,170,0.2); }
+  .status-pill.blue { background: rgba(0,152,255,0.15); color: var(--accent2); border: 1px solid rgba(0,152,255,0.2); }
+  .status-pill.orange { background: rgba(255,160,0,0.15); color: #ffa000; border: 1px solid rgba(255,160,0,0.2); }
+
+  .admin-edit-form { padding: 1.75rem; display: grid; gap: 1.25rem; }
+  .admin-edit-form .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 600px) { .admin-edit-form .row { grid-template-columns: 1fr; } }
+  .admin-input-group { display: flex; flex-direction: column; gap: 8px; }
+  .admin-input-group label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .admin-input-group input, .admin-input-group textarea, .admin-input-group select {
+    background: rgba(10,13,18,0.5); border: 1px solid var(--border2);
+    border-radius: var(--radius); padding: 11px 14px;
+    color: var(--text); font-family: var(--sans); font-size: 0.85rem;
+    outline: none; transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+  }
+  .admin-input-group input:focus, .admin-input-group textarea:focus,
+  .admin-input-group select:focus {
+    border-color: var(--accent);
+    background: rgba(0,212,170,0.05);
+    box-shadow: 0 0 20px rgba(0,212,170,0.2);
+  }
+  .admin-input-group textarea { min-height: 90px; resize: vertical; }
+  .admin-input-group select option { background: var(--bg2); }
+  .btn-save {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px; background: linear-gradient(135deg, var(--accent) 0%, #00b89f 100%);
+    color: #0a0d12; border: none; border-radius: var(--radius); font-size: 12px;
+    font-weight: 700; cursor: pointer; font-family: var(--sans);
+    transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,212,170,0.2);
+  }
+  .btn-save:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(0,212,170,0.4);
+  }
+  .btn-danger {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 22px; background: transparent; color: #ff4d6d;
+    border: 1px solid rgba(255,77,109,0.4); border-radius: var(--radius);
+    font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--sans);
+    transition: all 0.3s ease;
+  }
+  .btn-danger:hover {
+    background: rgba(255,77,109,0.15);
+    border-color: rgba(255,77,109,0.6);
+  }
+  .admin-btn-row { display: flex; gap: 0.75rem; padding: 0 1.75rem 1.75rem; }
+
+  .admin-log-entry {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .admin-log-entry:last-child { border-bottom: none; }
+  .log-time { font-family: var(--mono); color: var(--muted2); min-width: 150px; }
+  .log-msg { color: var(--text); }
+  .log-type { font-family: var(--mono); font-size: 10px; }
+
+  .save-toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 10000;
+    background: linear-gradient(135deg, rgba(26,32,48,0.95) 0%, rgba(20,25,32,0.8) 100%);
+    border: 1px solid rgba(0,212,170,0.3);
+    border-radius: 12px; padding: 16px 24px;
+    font-size: 13px; color: var(--accent); display: none;
+    animation: slideUp 0.4s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 15px 40px rgba(0,212,170,0.2);
+    font-weight: 600;
+  }
+  @keyframes slideUp { from { opacity:0; transform:translateY(20px) } to { opacity:1; transform:translateY(0) } }
+</style>
+</head>
+<body>
+
+<!-- 3D Canvas Background -->
+<canvas id="canvas-bg"></canvas>
+
+<!-- ═══ PUBLIC SITE ═══ -->
+<main>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">MM // portfolio</span>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero" style="max-width:none; padding:0;">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content" style="padding: 7rem 2.5rem 4rem; margin: 0 auto; max-width: 1100px;">
+    <div class="hero-tag">Available for new opportunities · Qatar</div>
+    <h1>Murath<br><span>Musni</span></h1>
+    <p class="hero-sub">IT Executive & Network Engineer with 3+ years securing enterprise infrastructure. Specialised in FortiGate, Cisco, Active Directory & AWS across fast-paced multi-user environments.</p>
+    <div class="hero-ctas">
+      <a href="mailto:murathmusni@gmail.com" class="btn btn-primary">Get in touch →</a>
+      <a href="#experience" class="btn btn-ghost">View experience</a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-num">150<span>+</span></div>
+        <div class="stat-label">Users supported</div>
+      </div>
+      <div>
+        <div class="stat-num">3<span>+</span></div>
+        <div class="stat-label">Years experience</div>
+      </div>
+      <div>
+        <div class="stat-num">5</div>
+        <div class="stat-label">Key projects</div>
+      </div>
+      <div>
+        <div class="stat-num">1<span>st</span></div>
+        <div class="stat-label">Class honours</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-label">Core competencies</div>
+  <h2>Technical Skills</h2>
+  <div class="skills-grid">
+    <div class="skill-card">
+      <div class="skill-icon teal">⬡</div>
+      <h3>Networking</h3>
+      <p style="font-size:0.85rem;color:var(--muted);line-height:1.5;">Cisco routing & switching, VLANs, OSPF, LAN/WAN architecture and IPSec/SSL VPN deployments.</p>
+      <div class="skill-tags">
+        <span class="tag">TCP/IP</span><span class="tag">802.1Q</span><span class="tag">OSPF</span>
+        <span class="tag">IPSec VPN</span><span class="tag">SSL VPN</span><span class="tag">NAT</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon blue">◈</div>
+      <h3>Security</h3>
+      <p style="font-size:0.85rem;color:var(--muted);line-height:1.5;">FortiGate firewall policy management, network segmentation, ACLs and penetration testing with Kali Linux.</p>
+      <div class="skill-tags">
+        <span class="tag">FortiGate</span><span class="tag">ACLs</span><span class="tag">Kali Linux</span>
+        <span class="tag">WPA3</span><span class="tag">Wireshark</span><span class="tag">Nmap</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon purple">◉</div>
+      <h3>Systems Administration</h3>
+      <p style="font-size:0.85rem;color:var(--muted);line-height:1.5;">Active Directory, Microsoft 365, Windows Server — user provisioning, Group Policy and helpdesk SLA management.</p>
+      <div class="skill-tags">
+        <span class="tag">Active Directory</span><span class="tag">M365</span><span class="tag">Win Server</span>
+        <span class="tag">Group Policy</span><span class="tag">SolarWinds</span>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-icon orange">◎</div>
+      <h3>Cloud & Automation</h3>
+      <p style="font-size:0.85rem;color:var(--muted);line-height:1.5;">AWS VPC, Python Boto3 for security automation and Bash scripting to reduce repetitive operational overhead.</p>
+      <div class="skill-tags">
+        <span class="tag">AWS VPC</span><span class="tag">Python</span><span class="tag">Boto3</span>
+        <span class="tag">Bash</span><span class="tag">Security Groups</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" style="border-top: 1px solid var(--border);">
+  <div class="section-label">Career history</div>
+  <h2>Experience</h2>
+  <div class="exp-timeline">
+    <div class="exp-item">
+      <div class="exp-header">
+        <div>
+          <div class="exp-role">IT Executive</div>
+          <div class="exp-company">Paramount Group · Doha, Qatar</div>
+        </div>
+        <span class="exp-date">Dec 2025 – Present</span>
+      </div>
+      <ul class="exp-list">
+        <li>Deliver end-user IT support for 150+ users across multiple departments, consistently meeting SLA targets.</li>
+        <li>Administer Active Directory and Microsoft 365 — user provisioning, access control, licence management and Group Policy.</li>
+        <li>Deploy and maintain enterprise infrastructure: desktops, printers, switches and access points.</li>
+        <li>Implemented data backup and disaster recovery solutions, safeguarding business continuity.</li>
+        <li>Drive proactive monitoring and preventive maintenance, significantly reducing unplanned downtime.</li>
+      </ul>
+    </div>
+    <div class="exp-item">
+      <div class="exp-header">
+        <div>
+          <div class="exp-role">Network & IT Support Engineer</div>
+          <div class="exp-company">Port City BPO · Sri Lanka</div>
+        </div>
+        <span class="exp-date">Jan 2024 – Nov 2025</span>
+      </div>
+      <ul class="exp-list">
+        <li>Provided L2/L3 technical support resolving complex issues across Windows OS, business apps and email systems.</li>
+        <li>Configured routers, managed switches and FortiGate firewalls; enforced security through NAT, ACLs and policy management.</li>
+        <li>Designed and deployed VLAN segmentation and inter-VLAN routing, improving performance and reducing broadcast congestion.</li>
+        <li>Established and maintained secure VPN connectivity for remote users and site-to-site links.</li>
+        <li>Produced comprehensive network documentation and topology diagrams, improving team efficiency and audit readiness.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" style="border-top: 1px solid var(--border);">
+  <div class="section-label">Portfolio</div>
+  <h2>Key Projects</h2>
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-num">01 / Network Design</div>
+      <h3>Enterprise Campus Network</h3>
+      <p class="project-desc">Designed and simulated a scalable multi-department campus network using 802.1Q VLANs, OSPF routing and ACLs. Reduced broadcast domain size and enforced strict inter-VLAN communication policies.</p>
+      <div class="project-tools">
+        <span class="project-tool">Cisco Packet Tracer</span>
+        <span class="project-tool">Wireshark</span>
+        <span class="project-tool">OSPF</span>
+        <span class="project-tool">VLANs</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-num">02 / Cloud Security</div>
+      <h3>Hybrid Cloud Secure Connectivity</h3>
+      <p class="project-desc">Deployed an IPSec VPN tunnel between an on-premise FortiGate firewall and AWS VPC for fully encrypted hybrid connectivity. Automated AWS security group auditing using Python Boto3.</p>
+      <div class="project-tools">
+        <span class="project-tool">AWS VPC</span>
+        <span class="project-tool">FortiGate</span>
+        <span class="project-tool">Python (Boto3)</span>
+        <span class="project-tool">IPSec</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-num">03 / Penetration Testing</div>
+      <h3>Wireless Network Pen Test Lab</h3>
+      <p class="project-desc">Conducted controlled penetration testing against WPA2 networks using Aircrack-ng and Nmap. Produced a remediation report recommending WPA3 migration and network re-segmentation.</p>
+      <div class="project-tools">
+        <span class="project-tool">Kali Linux</span>
+        <span class="project-tool">Aircrack-ng</span>
+        <span class="project-tool">Nmap</span>
+        <span class="project-tool">WPA3</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-num">04 / Automation</div>
+      <h3>WiFi Adapter Diagnostic Tool</h3>
+      <p class="project-desc">Developed a Bash script to automate pre-engagement validation of wireless adapters — checking driver status, RFKill state, monitor mode and packet injection, generating PASS/FAIL outputs.</p>
+      <div class="project-tools">
+        <span class="project-tool">Bash</span>
+        <span class="project-tool">iw</span>
+        <span class="project-tool">tcpdump</span>
+      </div>
+    </div>
+    <div class="project-card">
+      <div class="project-num">05 / AI & Automation</div>
+      <h3>Voice-Controlled System Tool</h3>
+      <p class="project-desc">Built a Python voice assistant using SpeechRecognition to execute system-level administrative commands via natural language, reducing repetitive manual tasks for IT operators.</p>
+      <div class="project-tools">
+        <span class="project-tool">Python</span>
+        <span class="project-tool">SpeechRecognition</span>
+        <span class="project-tool">System Admin</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION & CERTS -->
+<section style="border-top: 1px solid var(--border);">
+  <div class="section-label">Credentials</div>
+  <h2>Education & Certifications</h2>
+  <div class="cert-grid">
+    <div class="cert-card">
+      <div class="cert-dot"></div>
+      <div>
+        <div class="cert-title">BEng (Hons) Computer Networking & Cloud Security</div>
+        <div class="cert-inst">London Metropolitan University · 2025</div>
+        <span class="cert-badge earned">First Class Honours</span>
+      </div>
+    </div>
+    <div class="cert-card">
+      <div class="cert-dot"></div>
+      <div>
+        <div class="cert-title">Higher National Diploma in Network Engineering</div>
+        <div class="cert-inst">Esoft Metro Campus (Pearson BTEC) · 2024</div>
+        <span class="cert-badge earned">Distinction · Gold Medal</span>
+      </div>
+    </div>
+    <div class="cert-card">
+      <div class="cert-dot wip"></div>
+      <div>
+        <div class="cert-title">CCNA – Cisco Certified Network Associate</div>
+        <div class="cert-inst">Cisco · Expected 2026</div>
+        <span class="cert-badge progress">In Progress</span>
+      </div>
+    </div>
+    <div class="cert-card">
+      <div class="cert-dot wip"></div>
+      <div>
+        <div class="cert-title">AWS Certified Cloud Practitioner</div>
+        <div class="cert-inst">Amazon Web Services · Expected 2026</div>
+        <span class="cert-badge progress">In Progress</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- AWARDS -->
+  <div style="margin-top: 2.5rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.75rem;">
+    <div style="font-size:11px; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:1.25rem;">Awards & Recognition</div>
+    <div style="display:flex; flex-direction:column; gap:1rem;">
+      <div style="display:flex; gap:1rem; align-items:flex-start;">
+        <span style="color:var(--accent); font-size:1.2rem; line-height:1;">★</span>
+        <div>
+          <div style="font-size:0.9rem; font-weight:500; color:var(--text);">1st Runner-Up — Cyber Security & Networking Hackathon</div>
+          <div style="font-size:0.82rem; color:var(--muted); margin-top:2px;">Recognised for designing a secure network architecture and live vulnerability analysis · 2023</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:1rem; align-items:flex-start; border-top:1px solid var(--border); padding-top:1rem;">
+        <span style="color:#ffa000; font-size:1.2rem; line-height:1;">★</span>
+        <div>
+          <div style="font-size:0.9rem; font-weight:500; color:var(--text);">Gold Medalist — Higher National Diploma</div>
+          <div style="font-size:0.82rem; color:var(--muted); margin-top:2px;">Highest academic performance in the Network Engineering programme · 2024</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:1rem; align-items:flex-start; border-top:1px solid var(--border); padding-top:1rem;">
+        <span style="color:#fff; font-size:1.2rem; line-height:1;">★</span>
+        <div>
+          <div style="font-size:0.9rem; font-weight:500; color:var(--text);">First Class Honours — BEng Computer Networking & Cloud Security</div>
+          <div style="font-size:0.82rem; color:var(--muted); margin-top:2px;">Graduated with distinction across all modules · 2025</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" style="border-top: 1px solid var(--border);">
+  <div class="section-label">Get in touch</div>
+  <h2>Contact</h2>
+  <div class="contact-wrap">
+    <div class="contact-info">
+      <h3>Let's work together</h3>
+      <p>Based in Doha, Qatar with a transferable visa and available for immediate joining. Open to IT Executive, Network Engineer and Systems Administrator roles.</p>
+      <div class="contact-links">
+        <a href="mailto:murathmusni@gmail.com" class="contact-link">
+          <div class="contact-link-icon">@</div>
+          murathmusni@gmail.com
+        </a>
+        <a href="tel:+97477321821" class="contact-link">
+          <div class="contact-link-icon">✆</div>
+          +974 77 321 821
+        </a>
+        <a href="https://linkedin.com/in/murathmusni" target="_blank" class="contact-link">
+          <div class="contact-link-icon">in</div>
+          linkedin.com/in/murathmusni
+        </a>
+        <a href="#" class="contact-link">
+          <div class="contact-link-icon">⊕</div>
+          Doha, Qatar
+        </a>
+      </div>
+      <div style="margin-top:1.5rem; padding:1rem; background:rgba(0,212,170,0.05); border:1px solid rgba(0,212,170,0.15); border-radius:var(--radius-sm);">
+        <div style="font-size:11px; color:var(--accent); font-family:var(--mono); letter-spacing:0.05em; margin-bottom:4px;">Languages</div>
+        <div style="font-size:0.85rem; color:var(--muted);">English (Professional) · Tamil (Native) · Malayalam (Intermediate) · Hindi (Basic)</div>
+      </div>
+    </div>
+    <form class="contact-form" onsubmit="handleContact(event)">
+      <div class="form-group">
+        <label>NAME</label>
+        <input type="text" placeholder="Your name">
+      </div>
+      <div class="form-group">
+        <label>EMAIL</label>
+        <input type="email" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label>MESSAGE</label>
+        <textarea placeholder="Tell me about the opportunity..."></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:fit-content;">Send message →</button>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2025 Murath Musni. All rights reserved.</span>
+  <span style="color:var(--muted2);">IT Executive · Network Engineer · Systems Administrator</span>
+</footer>
+
+</main>
+
+<!-- ═══ ADMIN OVERLAY (hidden) ═══ -->
+<div id="admin-overlay">
+  <!-- LOGIN SCREEN -->
+  <div id="admin-login">
+    <div class="login-box">
+      <div class="login-logo">ADMIN PORTAL</div>
+      <h2>Restricted Access</h2>
+      <p>This portal is for authorised personnel only.</p>
+      <div class="login-field">
+        <label>USERNAME</label>
+        <input type="text" id="admin-user" placeholder="Enter username" autocomplete="off">
+      </div>
+      <div class="login-field">
+        <label>PASSWORD</label>
+        <input type="password" id="admin-pass" placeholder="Enter password" autocomplete="off"
+               onkeydown="if(event.key==='Enter') doLogin()">
+      </div>
+      <div class="login-error" id="login-error">Invalid credentials. Access denied.</div>
+      <button class="btn-login" onclick="doLogin()">Authenticate</button>
+      <div class="login-hint">Press Esc to close</div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL (shown after login) -->
+  <div id="admin-panel">
+    <div class="admin-nav">
+      <div class="admin-nav-left">
+        <span class="admin-logo">ADMIN // MUSNI.PORTFOLIO</span>
+        <div class="admin-tabs">
+          <button class="admin-tab active" onclick="switchTab('dashboard', this)">Dashboard</button>
+          <button class="admin-tab" onclick="switchTab('profile', this)">Profile</button>
+          <button class="admin-tab" onclick="switchTab('projects', this)">Projects</button>
+          <button class="admin-tab" onclick="switchTab('messages', this)">Messages</button>
+          <button class="admin-tab" onclick="switchTab('security', this)">Security</button>
+        </div>
+      </div>
+      <div class="admin-actions">
+        <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">Logged in as murath</span>
+        <button class="admin-close" onclick="logoutAdmin()">Sign out</button>
+        <button class="admin-close" onclick="closeAdmin()">✕ Close</button>
+      </div>
+    </div>
+
+    <div class="admin-content">
+
+      <!-- DASHBOARD -->
+      <div class="admin-pane active" id="pane-dashboard">
+        <div class="admin-stats-row">
+          <div class="admin-stat">
+            <div class="admin-stat-val">5<span>k</span></div>
+            <div class="admin-stat-label">Profile views (30d)</div>
+          </div>
+          <div class="admin-stat">
+            <div class="admin-stat-val">12</div>
+            <div class="admin-stat-label">Messages received</div>
+          </div>
+          <div class="admin-stat">
+            <div class="admin-stat-val">5</div>
+            <div class="admin-stat-label">Projects listed</div>
+          </div>
+          <div class="admin-stat">
+            <div class="admin-stat-val">3<span>+</span></div>
+            <div class="admin-stat-label">Years experience</div>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section-title">Recent Activity</div>
+          <div class="admin-card">
+            <div class="admin-log-entry"><span class="log-time">2025-12-01 09:14</span><span class="log-msg">Portfolio site deployed</span><span class="status-pill green" style="margin-left:auto;">success</span></div>
+            <div class="admin-log-entry"><span class="log-time">2025-12-01 08:50</span><span class="log-msg">Admin credentials configured</span><span class="status-pill blue" style="margin-left:auto;">info</span></div>
+            <div class="admin-log-entry"><span class="log-time">2025-12-01 08:30</span><span class="log-msg">Profile content imported from CV</span><span class="status-pill green" style="margin-left:auto;">success</span></div>
+            <div class="admin-log-entry"><span class="log-time">2025-11-30 22:15</span><span class="log-msg">Initial project setup</span><span class="status-pill green" style="margin-left:auto;">success</span></div>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section-title">Quick Links</div>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+            <button class="btn-save" onclick="switchTab('profile', document.querySelectorAll('.admin-tab')[1])">Edit Profile</button>
+            <button class="btn-save" onclick="switchTab('projects', document.querySelectorAll('.admin-tab')[2])">Manage Projects</button>
+            <button class="btn-save" onclick="switchTab('messages', document.querySelectorAll('.admin-tab')[3])">Check Messages</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFILE EDITOR -->
+      <div class="admin-pane" id="pane-profile">
+        <div class="admin-section">
+          <div class="admin-section-title">Personal Information</div>
+          <div class="admin-card">
+            <div class="admin-edit-form">
+              <div class="row">
+                <div class="admin-input-group">
+                  <label>FULL NAME</label>
+                  <input type="text" value="Murath Musni">
+                </div>
+                <div class="admin-input-group">
+                  <label>TITLE</label>
+                  <input type="text" value="IT Executive — Network Engineer — System Administrator">
+                </div>
+              </div>
+              <div class="row">
+                <div class="admin-input-group">
+                  <label>EMAIL</label>
+                  <input type="email" value="murathmusni@gmail.com">
+                </div>
+                <div class="admin-input-group">
+                  <label>PHONE</label>
+                  <input type="text" value="+974 77321821">
+                </div>
+              </div>
+              <div class="row">
+                <div class="admin-input-group">
+                  <label>LOCATION</label>
+                  <input type="text" value="Doha, Qatar">
+                </div>
+                <div class="admin-input-group">
+                  <label>LINKEDIN URL</label>
+                  <input type="text" value="linkedin.com/in/murathmusni">
+                </div>
+              </div>
+              <div class="admin-input-group">
+                <label>PROFESSIONAL SUMMARY</label>
+                <textarea>Results-driven IT professional with 3+ years of hands-on experience across IT support, network engineering, and systems administration. Currently based in Qatar with a transferable visa and available for immediate joining.</textarea>
+              </div>
+              <div class="admin-input-group">
+                <label>AVAILABILITY STATUS</label>
+                <select>
+                  <option selected>Available for immediate joining</option>
+                  <option>Open to opportunities</option>
+                  <option>Not available</option>
+                  <option>Freelance only</option>
+                </select>
+              </div>
+            </div>
+            <div class="admin-btn-row">
+              <button class="btn-save" onclick="showSave()">Save changes</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section-title">Certifications & Education</div>
+          <div class="admin-card">
+            <table class="admin-table">
+              <thead><tr><th>Qualification</th><th>Institution</th><th>Year</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>BEng Computer Networking & Cloud Security</td><td>London Metropolitan University</td><td>2025</td><td><span class="status-pill green">First Class</span></td></tr>
+                <tr><td>HND Network Engineering</td><td>Esoft Metro Campus</td><td>2024</td><td><span class="status-pill green">Distinction</span></td></tr>
+                <tr><td>CCNA</td><td>Cisco</td><td>2026</td><td><span class="status-pill orange">In Progress</span></td></tr>
+                <tr><td>AWS Cloud Practitioner</td><td>Amazon Web Services</td><td>2026</td><td><span class="status-pill orange">In Progress</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROJECTS MANAGER -->
+      <div class="admin-pane" id="pane-projects">
+        <div class="admin-section">
+          <div class="admin-section-title">Project Listings</div>
+          <div class="admin-card">
+            <table class="admin-table">
+              <thead><tr><th>#</th><th>Project Name</th><th>Category</th><th>Tech Stack</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>01</td><td>Enterprise Campus Network Design</td><td>Network Design</td><td>Cisco PT, Wireshark</td><td><span class="status-pill green">Published</span></td></tr>
+                <tr><td>02</td><td>Hybrid Cloud Secure Connectivity</td><td>Cloud Security</td><td>AWS, FortiGate, Python</td><td><span class="status-pill green">Published</span></td></tr>
+                <tr><td>03</td><td>Wireless Network Pen Test Lab</td><td>Penetration Testing</td><td>Kali, Aircrack-ng, Nmap</td><td><span class="status-pill green">Published</span></td></tr>
+                <tr><td>04</td><td>WiFi Adapter Diagnostic Tool</td><td>Automation</td><td>Bash, iw, tcpdump</td><td><span class="status-pill green">Published</span></td></tr>
+                <tr><td>05</td><td>Voice-Controlled System Tool</td><td>AI & Automation</td><td>Python, SpeechRecognition</td><td><span class="status-pill green">Published</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section-title">Add / Edit Project</div>
+          <div class="admin-card">
+            <div class="admin-edit-form">
+              <div class="row">
+                <div class="admin-input-group">
+                  <label>PROJECT TITLE</label>
+                  <input type="text" placeholder="e.g. Zero Trust Network Implementation">
+                </div>
+                <div class="admin-input-group">
+                  <label>CATEGORY</label>
+                  <select>
+                    <option>Network Design</option>
+                    <option>Cloud Security</option>
+                    <option>Penetration Testing</option>
+                    <option>Automation</option>
+                    <option>Systems Admin</option>
+                    <option>AI & Automation</option>
+                  </select>
+                </div>
+              </div>
+              <div class="admin-input-group">
+                <label>DESCRIPTION</label>
+                <textarea placeholder="Brief description of the project and its outcomes..."></textarea>
+              </div>
+              <div class="admin-input-group">
+                <label>TOOLS / TECH STACK (comma separated)</label>
+                <input type="text" placeholder="e.g. Cisco, FortiGate, Python, AWS">
+              </div>
+              <div class="admin-input-group">
+                <label>VISIBILITY</label>
+                <select>
+                  <option>Published</option>
+                  <option>Draft</option>
+                  <option>Hidden</option>
+                </select>
+              </div>
+            </div>
+            <div class="admin-btn-row">
+              <button class="btn-save" onclick="showSave()">Add Project</button>
+              <button class="btn-danger">Clear Form</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="admin-pane" id="pane-messages">
+        <div class="admin-section">
+          <div class="admin-section-title">Contact Form Messages</div>
+          <div class="admin-card">
+            <table class="admin-table">
+              <thead><tr><th>Date</th><th>Name</th><th>Email</th><th>Preview</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>2025-12-01</td><td>Sarah Al-Khalifa</td><td>sarah@techqatar.com</td><td>Interested in your network experience...</td><td><span class="status-pill blue">New</span></td></tr>
+                <tr><td>2025-11-29</td><td>James Mitchell</td><td>james@globalit.net</td><td>We have an opening for IT Executive...</td><td><span class="status-pill green">Read</span></td></tr>
+                <tr><td>2025-11-25</td><td>Priya Sharma</td><td>priya@cloudinfra.io</td><td>Your AWS automation project caught my eye...</td><td><span class="status-pill green">Read</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECURITY -->
+      <div class="admin-pane" id="pane-security">
+        <div class="admin-section">
+          <div class="admin-section-title">Access Credentials</div>
+          <div class="admin-card">
+            <div class="admin-edit-form">
+              <div class="row">
+                <div class="admin-input-group">
+                  <label>CURRENT USERNAME</label>
+                  <input type="text" value="murath" autocomplete="off">
+                </div>
+                <div class="admin-input-group">
+                  <label>NEW USERNAME</label>
+                  <input type="text" placeholder="Enter new username" autocomplete="off">
+                </div>
+              </div>
+              <div class="row">
+                <div class="admin-input-group">
+                  <label>CURRENT PASSWORD</label>
+                  <input type="password" placeholder="••••••••" autocomplete="off">
+                </div>
+                <div class="admin-input-group">
+                  <label>NEW PASSWORD</label>
+                  <input type="password" placeholder="Enter new password" autocomplete="off">
+                </div>
+              </div>
+              <div class="admin-input-group">
+                <label>CONFIRM NEW PASSWORD</label>
+                <input type="password" placeholder="Confirm new password" autocomplete="off">
+              </div>
+            </div>
+            <div class="admin-btn-row">
+              <button class="btn-save" onclick="showSave()">Update credentials</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section-title">Access Logs</div>
+          <div class="admin-card">
+            <div id="access-log-list"></div>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <div class="admin-section-title">Admin Trigger Key</div>
+          <div class="admin-card" style="padding:1.5rem;">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:1rem;">The admin panel is triggered by pressing <code style="background:var(--bg3);padding:2px 8px;border-radius:4px;font-family:var(--mono);font-size:12px;color:var(--accent);">Ctrl + Shift + A</code> anywhere on the portfolio page. This key combination is not visible to visitors.</p>
+            <p style="font-size:13px;color:var(--muted);">Default credentials: <code style="background:var(--bg3);padding:2px 8px;border-radius:4px;font-family:var(--mono);font-size:12px;color:var(--accent);">murath / admin2025</code> — change these above.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="save-toast" id="save-toast">✓ Changes saved successfully</div>
+
+<script>
+// ────────────────────────────────────────────────
+// ADVANCED 3D CINEMATIC SCENE WITH THREE.JS
+// ────────────────────────────────────────────────
+
+let scene, camera, renderer, particles = [];
+let scrollProgress = 0;
+
+function initThreeJS() {
+  const canvas = document.getElementById('canvas-bg');
+  
+  // Scene setup
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.z = 30;
+  
+  renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFShadowShadowMap;
+  
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
+  scene.add(ambientLight);
+  
+  const pointLight1 = new THREE.PointLight(0x00d4aa, 1.5);
+  pointLight1.position.set(20, 20, 20);
+  pointLight1.castShadow = true;
+  scene.add(pointLight1);
+  
+  const pointLight2 = new THREE.PointLight(0x0098ff, 1);
+  pointLight2.position.set(-20, 15, 10);
+  scene.add(pointLight2);
+  
+  const pointLight3 = new THREE.PointLight(0x7c3aed, 0.8);
+  pointLight3.position.set(0, -20, 15);
+  scene.add(pointLight3);
+  
+  // Create advanced particles
+  createParticleSystem();
+  createFloatingElements();
+  
+  // Handle resize
+  window.addEventListener('resize', onWindowResize);
+  
+  // Start animation loop
+  animate();
+}
+
+function createParticleSystem() {
+  const geometry = new THREE.BufferGeometry();
+  const count = 800;
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const sizes = new Float32Array(count);
+  
+  const colorOptions = [
+    { r: 0, g: 0.83, b: 0.67 },    // Teal
+    { r: 0, g: 0.60, b: 1 },       // Blue
+    { r: 0.49, g: 0.23, b: 0.92 }  // Purple
+  ];
+  
+  for (let i = 0; i < count; i++) {
+    positions[i * 3] = (Math.random() - 0.5) * 100;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 100;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 100;
+    
+    const color = colorOptions[Math.floor(Math.random() * colorOptions.length)];
+    colors[i * 3] = color.r;
+    colors[i * 3 + 1] = color.g;
+    colors[i * 3 + 2] = color.b;
+    
+    sizes[i] = Math.random() * 0.5 + 0.1;
+  }
+  
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+  
+  const material = new THREE.PointsMaterial({
+    map: createCanvasTexture(),
+    sizeAttenuation: true,
+    transparent: true,
+    vertexColors: true,
+    fog: false
+  });
+  
+  const points = new THREE.Points(geometry, material);
+  scene.add(points);
+  particles.push({ mesh: points, velocity: new Float32Array(count * 3) });
+  
+  // Initialize velocities
+  for (let i = 0; i < count * 3; i++) {
+    particles[0].velocity[i] = (Math.random() - 0.5) * 0.5;
+  }
+}
+
+function createFloatingElements() {
+  // Floating geometric shapes
+  const geometries = [
+    new THREE.IcosahedronGeometry(2, 4),
+    new THREE.OctahedronGeometry(2),
+    new THREE.TetrahedronGeometry(2)
+  ];
+  
+  const materials = [
+    new THREE.MeshStandardMaterial({ 
+      color: 0x00d4aa, 
+      metalness: 0.8, 
+      roughness: 0.2,
+      emissive: 0x00d4aa,
+      emissiveIntensity: 0.3
+    }),
+    new THREE.MeshStandardMaterial({ 
+      color: 0x0098ff, 
+      metalness: 0.8, 
+      roughness: 0.2,
+      emissive: 0x0098ff,
+      emissiveIntensity: 0.3
+    }),
+    new THREE.MeshStandardMaterial({ 
+      color: 0x7c3aed, 
+      metalness: 0.8, 
+      roughness: 0.2,
+      emissive: 0x7c3aed,
+      emissiveIntensity: 0.3
+    })
+  ];
+  
+  for (let i = 0; i < 3; i++) {
+    const mesh = new THREE.Mesh(geometries[i], materials[i]);
+    mesh.position.set(
+      (Math.random() - 0.5) * 60,
+      (Math.random() - 0.5) * 60,
+      (Math.random() - 0.5) * 60
+    );
+    mesh.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
+    mesh.castShadow = true;
+    mesh.receiveShadow = true;
+    scene.add(mesh);
+  }
+}
+
+function createCanvasTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 32;
+  canvas.height = 32;
+  const ctx = canvas.getContext('2d');
+  
+  const gradient = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+  gradient.addColorStop(0, 'rgba(255,255,255,1)');
+  gradient.addColorStop(0.5, 'rgba(255,255,255,0.5)');
+  gradient.addColorStop(1, 'rgba(255,255,255,0)');
+  
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 32, 32);
+  
+  const texture = new THREE.CanvasTexture(canvas);
+  return texture;
+}
+
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  
+  // Update particles
+  if (particles.length > 0) {
+    const positions = particles[0].mesh.geometry.attributes.position.array;
+    const velocity = particles[0].velocity;
+    
+    for (let i = 0; i < positions.length; i += 3) {
+      positions[i] += velocity[i];
+      positions[i + 1] += velocity[i + 1];
+      positions[i + 2] += velocity[i + 2];
+      
+      // Wrap around
+      if (positions[i] > 50) positions[i] = -50;
+      if (positions[i] < -50) positions[i] = 50;
+      if (positions[i + 1] > 50) positions[i + 1] = -50;
+      if (positions[i + 1] < -50) positions[i + 1] = 50;
+      if (positions[i + 2] > 50) positions[i + 2] = -50;
+      if (positions[i + 2] < -50) positions[i + 2] = 50;
+    }
+    
+    particles[0].mesh.geometry.attributes.position.needsUpdate = true;
+    particles[0].mesh.rotation.x += 0.0001;
+    particles[0].mesh.rotation.y += 0.0002;
+  }
+  
+  // Rotate floating elements
+  scene.children.forEach(child => {
+    if (child.geometry && child.geometry.type !== 'BufferGeometry' && 
+        (child.geometry.type === 'IcosahedronGeometry' || 
+         child.geometry.type === 'OctahedronGeometry' || 
+         child.geometry.type === 'TetrahedronGeometry')) {
+      child.rotation.x += 0.003;
+      child.rotation.y += 0.002;
+      child.position.y += Math.sin(Date.now() * 0.0005) * 0.02;
+    }
+  });
+  
+  // Mouse interaction
+  camera.position.x += (window.mouseX - camera.position.x) * 0.001;
+  camera.position.y += (window.mouseY - camera.position.y) * 0.001;
+  
+  renderer.render(scene, camera);
+}
+
+// Mouse tracking
+window.mouseX = window.innerWidth / 2;
+window.mouseY = window.innerHeight / 2;
+
+document.addEventListener('mousemove', (e) => {
+  window.mouseX = e.clientX;
+  window.mouseY = e.clientY;
+});
+
+// Initialize on load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initThreeJS);
+} else {
+  initThreeJS();
+}
+
+// ────────────────────────────────────────────────
+// SCROLL ANIMATIONS & PARALLAX
+// ────────────────────────────────────────────────
+
+function observeElements() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animationPlayState = 'running';
+      }
+    });
+  }, { threshold: 0.1 });
+  
+  document.querySelectorAll('section').forEach(section => {
+    observer.observe(section);
+  });
+}
+
+window.addEventListener('load', observeElements);
+
+// ────────────────────────────────────────────────
+// ADMIN CREDENTIALS (change these!)
+// ────────────────────────────────────────────────
+const ADMIN_USER = 'murath';
+const ADMIN_PASS = 'admin2025';
+
+let isLoggedIn = false;
+
+// ─── KEYBOARD SHORTCUT: Ctrl+Shift+A ───
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+    e.preventDefault();
+    openAdmin();
+  }
+  if (e.key === 'Escape') {
+    if (document.getElementById('admin-overlay').classList.contains('visible')) {
+      closeAdmin();
+    }
+  }
+});
+
+function openAdmin() {
+  const overlay = document.getElementById('admin-overlay');
+  overlay.classList.add('visible');
+  if (!isLoggedIn) {
+    document.getElementById('admin-login').style.display = 'flex';
+    document.getElementById('admin-panel').classList.remove('visible');
+    setTimeout(() => document.getElementById('admin-user').focus(), 100);
+  } else {
+    showPanel();
+  }
+}
+
+function closeAdmin() {
+  document.getElementById('admin-overlay').classList.remove('visible');
+}
+
+function doLogin() {
+  const u = document.getElementById('admin-user').value.trim();
+  const p = document.getElementById('admin-pass').value.trim();
+  const err = document.getElementById('login-error');
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
+    isLoggedIn = true;
+    err.style.display = 'none';
+    logAccess('Admin login successful');
+    showPanel();
+  } else {
+    err.style.display = 'block';
+    document.getElementById('admin-pass').value = '';
+    logAccess('Failed login attempt');
+  }
+}
+
+function showPanel() {
+  document.getElementById('admin-login').style.display = 'none';
+  document.getElementById('admin-panel').classList.add('visible');
+  renderAccessLog();
+}
+
+function logoutAdmin() {
+  isLoggedIn = false;
+  document.getElementById('admin-panel').classList.remove('visible');
+  document.getElementById('admin-login').style.display = 'flex';
+  document.getElementById('admin-user').value = '';
+  document.getElementById('admin-pass').value = '';
+}
+
+// ─── TABS ───
+function switchTab(id, btn) {
+  document.querySelectorAll('.admin-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('pane-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── SAVE TOAST ───
+function showSave() {
+  const t = document.getElementById('save-toast');
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2500);
+}
+
+// ─── CONTACT FORM ───
+function handleContact(e) {
+  e.preventDefault();
+  alert('Message sent! (In production this would submit to your backend.)');
+  e.target.reset();
+}
+
+// ─── ACCESS LOG ───
+const accessLog = [];
+function logAccess(msg) {
+  accessLog.unshift({ time: new Date().toLocaleString(), msg });
+}
+function renderAccessLog() {
+  const container = document.getElementById('access-log-list');
+  if (!container) return;
+  if (accessLog.length === 0) {
+    container.innerHTML = '<div style="padding:1rem;font-size:13px;color:var(--muted);">No access events recorded this session.</div>';
+    return;
+  }
+  container.innerHTML = accessLog.map(e =>
+    `<div class="admin-log-entry">
+      <span class="log-time">${e.time}</span>
+      <span class="log-msg">${e.msg}</span>
+    </div>`
+  ).join('');
+}
+
+// ─── SMOOTH SCROLL ───
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+</body>
+</html>

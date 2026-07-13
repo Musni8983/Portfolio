@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Graduate Portfolio — Alex Mwangi</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,600;1,500&display=swap" rel="stylesheet" />
+    <style>
+        /* ── Reset & Base ── */
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0b0e14;
+            color: #e8edf5;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ── Color Palette (inspired by the photo) ── */
+        :root {
+            --gold: #c9a84c;
+            --gold-light: #e8ce7e;
+            --gold-dark: #a58634;
+            --purple: #6a3e8c;
+            --purple-light: #9b6ec0;
+            --dark: #0b0e14;
+            --dark2: #131922;
+            --dark3: #1c2532;
+            --text: #e8edf5;
+            --text-muted: #9aa4b8;
+        }
+
+        /* ── Utility ── */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .section-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--gold);
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 16px;
+        }
+
+        .section-sub {
+            color: var(--text-muted);
+            max-width: 600px;
+            font-size: 1.05rem;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            background: linear-gradient(160deg, #0b0e14 0%, #141b28 40%, #1a1f2e 100%);
+            overflow: hidden;
+        }
+
+        /* subtle flag-like streaks */
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                repeating-linear-gradient(90deg,
+                    transparent 0px,
+                    transparent 120px,
+                    rgba(201, 168, 76, 0.04) 120px,
+                    rgba(201, 168, 76, 0.04) 122px);
+            pointer-events: none;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-content {
+            padding: 40px 0;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(201, 168, 76, 0.12);
+            border: 1px solid rgba(201, 168, 76, 0.25);
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            color: var(--gold-light);
+            margin-bottom: 28px;
+        }
+
+        .hero-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--gold);
+            border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 4.2rem;
+            font-weight: 600;
+            line-height: 1.15;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .hero h1 .highlight {
+            background: linear-gradient(135deg, var(--gold-light), var(--gold-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero h2 {
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+
+        .hero-description {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            max-width: 520px;
+            margin-bottom: 36px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #0b0e14;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(201, 168, 76, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--gold);
+            background: rgba(201, 168, 76, 0.08);
+        }
+
+        /* ── Hero Image ── */
+        .hero-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .hero-image .frame {
+            position: relative;
+            width: 380px;
+            height: 500px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid rgba(201, 168, 76, 0.2);
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.6),
+                inset 0 0 60px rgba(201, 168, 76, 0.03);
+        }
+
+        .hero-image .frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* decorative golden pillar effect */
+        .hero-image .frame::after {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 10%;
+            bottom: 10%;
+            width: 4px;
+            background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+            border-radius: 4px;
+            opacity: 0.4;
+        }
+
+        .hero-image .flag-ornament {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            display: flex;
+            gap: 6px;
+        }
+
+        .hero-image .flag-ornament span {
+            width: 40px;
+            height: 28px;
+            border-radius: 4px;
+            display: block;
+        }
+
+        .flag-ornament .f1 {
+            background: linear-gradient(135deg, #1a3c6e, #b22234);
+        }
+        .flag-ornament .f2 {
+            background: linear-gradient(135deg, #006b3f, #ffcc00);
+        }
+        .flag-ornament .f3 {
+            background: linear-gradient(135deg, #002664, #ce1126);
+        }
+
+        /* decorative elements */
+        .hero-image::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(201, 168, 76, 0.06), transparent 70%);
+            bottom: -60px;
+            right: -60px;
+            z-index: -1;
+        }
+
+        /* ── Stats Bar ── */
+        .stats-bar {
+            background: var(--dark2);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 40px 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            text-align: center;
+        }
+
+        .stat-item .number {
+            font-size: 2.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold-dark));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-item .label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 4px;
+        }
+
+        /* ── About ── */
+        .about {
+            padding: 100px 0;
+            background: var(--dark);
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .about-text p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-size: 1.05rem;
+        }
+
+        .about-text .accent-line {
+            width: 60px;
+            height: 3px;
+            background: var(--gold);
+            border-radius: 4px;
+            margin-top: 28px;
+        }
+
+        .about-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .about-card {
+            background: var(--dark2);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 28px 24px;
+            transition: all 0.3s ease;
+        }
+
+        .about-card:hover {
+            border-color: rgba(201, 168, 76, 0.2);
+            transform: translateY(-4px);
+        }
+
+        .about-card .icon {
+            font-size: 2rem;
+            margin-bottom: 12px;
+        }
+
+        .about-card h4 {
+            color: #fff;
+            margin-bottom: 6px;
+            font-size: 1.1rem;
+        }
+
+        .about-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* ── Education / Timeline ── */
+        .education {
+            padding: 100px 0;
+            background: var(--dark2);
+        }
+
+        .timeline {
+            display: grid;
+            gap: 32px;
+            margin-top: 48px;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 32px;
+            padding: 24px 28px;
+            background: var(--dark3);
+            border-radius: 12px;
+            border-left: 3px solid var(--gold);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover {
+            background: rgba(201, 168, 76, 0.04);
+        }
+
+        .timeline-item .year {
+            font-weight: 700;
+            color: var(--gold);
+            font-size: 1.1rem;
+        }
+
+        .timeline-item .degree {
+            color: #fff;
+            font-size: 1.15rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .timeline-item .school {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .timeline-item .desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        /* ── Achievements ── */
+        .achievements {
+            padding: 100px 0;
+            background: var(--dark);
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .achievement-card {
+            background: var(--dark2);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 12px;
+            padding: 32px 24px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .achievement-card:hover {
+            border-color: rgba(201, 168, 76, 0.2);
+            transform: translateY(-6px);
+        }
+
+        .achievement-card .award-icon {
+            font-size: 2.8rem;
+            margin-bottom: 16px;
+        }
+
+        .achievement-card h4 {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .achievement-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .achievement-card .medal {
+            color: var(--gold);
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: block;
+            margin-top: 12px;
+        }
+
+        /* ── Gallery / Flags Section ── */
+        .flags-section {
+            padding: 80px 0;
+            background: var(--dark2);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .flags-row {
+            display: flex;
+            justify-content: center;
+            gap: 32px;
+            flex-wrap: wrap;
+            margin-top: 36px;
+        }
+
+        .flag-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .flag-item .flag {
+            width: 60px;
+            height: 40px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .flag-item .f-name {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .flag-item .flag.us {
+            background: linear-gradient(180deg, #b22234 33%, #fff 33%, #fff 66%, #1a3c6e 66%);
+        }
+        .flag-item .flag.kenya {
+            background: linear-gradient(180deg, #000 33%, #fff 33%, #fff 66%, #006600 66%);
+        }
+        .flag-item .flag.uk {
+            background: linear-gradient(90deg, #012169 30%, #fff 30%, #fff 40%, #012169 40%, #012169 60%, #fff 60%, #fff 70%, #012169 70%);
+        }
+        .flag-item .flag.eu {
+            background: linear-gradient(180deg, #003399 33%, #ffcc00 33%, #ffcc00 66%, #003399 66%);
+        }
+        .flag-item .flag.sa {
+            background: linear-gradient(135deg, #de3831 33%, #fff 33%, #fff 66%, #002395 66%);
+        }
+
+        /* ── CTA ── */
+        .cta {
+            padding: 100px 0;
+            text-align: center;
+            background: linear-gradient(160deg, var(--dark), #1a1f2e);
+        }
+
+        .cta h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: #fff;
+            margin-bottom: 16px;
+        }
+
+        .cta p {
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto 36px;
+            font-size: 1.1rem;
+        }
+
+        /* ── Footer ── */
+        footer {
+            padding: 32px 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        footer .gold {
+            color: var(--gold);
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 968px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-content {
+                order: 2;
+            }
+            .hero-image {
+                order: 1;
+            }
+
+            .hero h1 {
+                font-size: 3rem;
+            }
+            .hero-description {
+                margin: 0 auto 36px;
+            }
+            .hero-actions {
+                justify-content: center;
+            }
+
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .achievements-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .timeline-item {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 32px;
+            }
+
+            .hero-image .frame {
+                width: 280px;
+                height: 380px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+            .section-title {
+                font-size: 2rem;
+            }
+            .achievements-grid {
+                grid-template-columns: 1fr;
+            }
+            .about-cards {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ═══════════════ HERO ═══════════════ -->
+    <section class="hero">
+        <div class="container hero-grid">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="dot"></span>
+                    Class of 2026 · International Graduate
+                </div>
+
+                <h1>
+                    Hello, I'm<br />
+                    <span class="highlight">Alex Mwangi</span>
+                </h1>
+                <h2>BSc. International Relations &amp; Global Affairs</h2>
+                <p class="hero-description">
+                    A passionate recent graduate with a global perspective, 
+                    dedicated to bridging cultures and driving meaningful 
+                    change through diplomacy and international cooperation.
+                </p>
+                <div class="hero-actions">
+                    <a href="#resume" class="btn btn-primary">
+                        📄 View Resume
+                    </a>
+                    <a href="#contact" class="btn btn-outline">
+                        ✉️ Get in Touch
+                    </a>
+                </div>
+            </div>
+
+            <div class="hero-image">
+                <div class="frame">
+                    <!-- In production, replace src with actual image path -->
+                    <img 
+                        src="/api/placeholder/380/500" 
+                        alt="Graduate portrait in academic regalia"
+                        style="background: linear-gradient(145deg, #1c2532, #2a3346);"
+                    />
+                    <div class="flag-ornament">
+                        <span class="f1"></span>
+                        <span class="f2"></span>
+                        <span class="f3"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ STATS ═══════════════ -->
+    <section class="stats-bar">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="number">4.0</div>
+                    <div class="label">Cumulative GPA</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">12</div>
+                    <div class="label">Countries Visited</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">5</div>
+                    <div class="label">Languages Spoken</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">8</div>
+                    <div class="label">Honors &amp; Awards</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ ABOUT ═══════════════ -->
+    <section class="about" id="about">
+        <div class="container about-grid">
+            <div class="about-text">
+                <span class="section-label">About Me</span>
+                <h2 class="section-title">Bridging Nations<br />Through Dialogue</h2>
+                <p>
+                    Growing up across three continents gave me a unique lens through 
+                    which I see the world — not as divided borders, but as a tapestry 
+                    of interconnected stories. My academic journey in International 
+                    Relations was fueled by a deep curiosity about how nations 
+                    collaborate, negotiate, and build lasting peace.
+                </p>
+                <p>
+                    Today, as a freshly minted graduate, I'm eager to apply my 
+                    research in conflict resolution, international law, and 
+                    cultural diplomacy to real-world challenges.
+                </p>
+                <div class="accent-line"></div>
+            </div>
+            <div class="about-cards">
+                <div class="about-card">
+                    <div class="icon">🌍</div>
+                    <h4>Global Mindset</h4>
+                    <p>Lived in 4 countries across Africa, Europe &amp; North America</p>
+                </div>
+                <div class="about-card">
+                    <div class="icon">🎓</div>
+                    <h4>Top Performer</h4>
+                    <p>Dean's List all semesters · Summa Cum Laude</p>
+                </div>
+                <div class="about-card">
+                    <div class="icon">🤝</div>
+                    <h4>Diplomatic Focus</h4>
+                    <p>UN Model conferences · Embassy internships</p>
+                </div>
+                <div class="about-card">
+                    <div class="icon">📢</div>
+                    <h4>Public Speaker</h4>
+                    <p>TEDx speaker · 3-time debate champion</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ EDUCATION ═══════════════ -->
+    <section class="education" id="resume">
+        <div class="container">
+            <span class="section-label">Education</span>
+            <h2 class="section-title">Academic Journey</h2>
+            <p class="section-sub">
+                A rigorous academic foundation paired with hands-on international experience.
+            </p>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="year">2022 – 2026</div>
+                    <div>
+                        <div class="degree">BSc. International Relations &amp; Global Affairs</div>
+                        <div class="school">University of Oxford · Hertford College</div>
+                        <div class="desc">
+                            Specialized in International Security &amp; Diplomatic Studies. 
+                            Thesis: <em>"Soft Power and Cultural Diplomacy in the 21st Century."</em>
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="year">2024 – 2025</div>
+                    <div>
+                        <div class="degree">Exchange Year — International Affairs</div>
+                        <div class="school">Sciences Po · Paris, France</div>
+                        <div class="desc">
+                            Studied EU governance, cross-cultural negotiation, and 
+                            international law. Research assistant at the CERI.
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="year">2018 – 2022</div>
+                    <div>
+                        <div class="degree">International Baccalaureate (IB Diploma)</div>
+                        <div class="school">United World College · Maastricht</div>
+                        <div class="desc">
+                            Higher Level: History, Politics, Economics. 
+                            Extended Essay on post-colonial African diplomacy.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ ACHIEVEMENTS ═══════════════ -->
+    <section class="achievements">
+        <div class="container">
+            <span class="section-label">Honors</span>
+            <h2 class="section-title">Achievements &amp; Awards</h2>
+            <p class="section-sub">
+                Recognitions that reflect dedication, leadership, and academic excellence.
+            </p>
+
+            <div class="achievements-grid">
+                <div class="achievement-card">
+                    <div class="award-icon">🏅</div>
+                    <h4>Rhodes Scholarship Finalist</h4>
+                    <p>Recognized among top 30 candidates for postgraduate leadership in 2025.</p>
+                    <span class="medal">★ Distinguished</span>
+                </div>
+                <div class="achievement-card">
+                    <div class="award-icon">🌐</div>
+                    <h4>UN Youth Delegate</h4>
+                    <p>Represented Kenya at the 2024 UN Youth Assembly in New York.</p>
+                    <span class="medal">★ Global Impact</span>
+                </div>
+                <div class="achievement-card">
+                    <div class="award-icon">📜</div>
+                    <h4>President's Award for Excellence</h4>
+                    <p>Highest academic honor conferred by the University Senate.</p>
+                    <span class="medal">★ Summa Cum Laude</span>
+                </div>
+                <div class="achievement-card">
+                    <div class="award-icon">🗣️</div>
+                    <h4>Best Delegate — HMUN 2025</h4>
+                    <p>Harvard Model United Nations, Security Council committee.</p>
+                    <span class="medal">★ Outstanding</span>
+                </div>
+                <div class="achievement-card">
+                    <div class="award-icon">✍️</div>
+                    <h4>Published Researcher</h4>
+                    <p>Authored paper on "Digital Diplomacy in East Africa" — Journal of IR.</p>
+                    <span class="medal">★ Peer-Reviewed</span>
+                </div>
+                <div class="achievement-card">
+                    <div class="award-icon">🎤</div>
+                    <h4>TEDx Speaker 2025</h4>
+                    <p>Talk: "The Power of Peripheral Voices in Global Policy."</p>
+                    <span class="medal">★ Featured</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ FLAGS ═══════════════ -->
+    <section class="flags-section">
+        <div class="container" style="text-align:center;">
+            <span class="section-label">Global Network</span>
+            <h2 class="section-title" style="font-size:2rem;">A World of Connections</h2>
+            <p class="section-sub" style="margin:0 auto;">
+                From the halls of academia to the floors of international assemblies — 
+                these are the nations that have shaped my journey.
+            </p>
+            <div class="flags-row">
+                <div class="flag-item">
+                    <div class="flag kenya"></div>
+                    <span class="f-name">Kenya</span>
+                </div>
+                <div class="flag-item">
+                    <div class="flag uk"></div>
+                    <span class="f-name">United Kingdom</span>
+                </div>
+                <div class="flag-item">
+                    <div class="flag us"></div>
+                    <span class="f-name">United States</span>
+                </div>
+                <div class="flag-item">
+                    <div class="flag eu"></div>
+                    <span class="f-name">European Union</span>
+                </div>
+                <div class="flag-item">
+                    <div class="flag sa"></div>
+                    <span class="f-name">South Africa</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════ CTA ═══════════════ -->
+    <section class="cta" id="contact">
+        <div class="container">
+            <h2>Let's Connect</h2>
+            <p>
+                Whether it's a research collaboration, speaking opportunity, 
+                or a conversation about global affairs — I'd love to hear from you.
+            </p>
+            <a href="mailto:alex.mwangi@example.com" class="btn btn-primary">
+                ✉️ alex.mwangi@example.com
+            </a>
+        </div>
+    </section>
+
+    <!-- ═══════════════ FOOTER ═══════════════ -->
+    <footer>
+        <div class="container">
+            <p>
+                © 2026 <span class="gold">Alex Mwangi</span> · 
+                Designed with 🏛️ for a global future
+            </p>
+        </div>
+    </footer>
+
+</body>
+</html>
