@@ -705,7 +705,6 @@ function fillProfileForm(p){
   document.getElementById('p-photo_url').value = p.photo_url || '';
   document.getElementById('p-cv_url').value = p.cv_url || '';
   document.getElementById('cv-current-link').innerHTML = p.cv_url ? `OK Current CV - <a href="${p.cv_url}" target="_blank" style="color:var(--accent);">view</a>` : 'No CV uploaded yet.';
-  document.getElementById('p-tagline').value = p.tagline || '';
   document.getElementById('p-email').value = p.email || '';
   document.getElementById('p-phone').value = p.phone || '';
   document.getElementById('p-location').value = p.location || '';
