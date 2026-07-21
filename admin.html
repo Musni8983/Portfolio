@@ -132,7 +132,24 @@ body {
 .admin-pane { display: none; }
 .admin-pane.active { display: block; animation: fadeIn 0.3s ease; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+#editor-toolbar { background:#111827; padding:8px 10px; position: sticky; top: 60px; z-index: 50; border: 1px solid #1f2937; border-radius: 6px 6px 0 0; }
+#editor-toolbar.toolbar-frozen { position: fixed; top: 60px; left: 0; right: 0; z-index: 999; box-shadow: 0 2px 10px rgba(0,0,0,.4); border-radius: 0; }
 
+.toolbar-row { display:flex; flex-wrap:wrap; align-items:center; gap:2px; }
+.toolbar-row + .toolbar-row { margin-top:6px; padding-top:6px; border-top:1px solid #1f2937; }
+
+#editor-toolbar .ql-formats { display:flex; align-items:center; gap:2px; margin-right:10px !important; padding-right:10px; border-right:1px solid #1f2937; }
+#editor-toolbar .ql-formats:last-child { border-right:none; }
+
+#editor-toolbar button, #editor-toolbar select { white-space: nowrap; }
+#editor-toolbar .ql-picker { color:#e5e7eb; }
+
+.toolbar-extra-controls button {
+  background:#1f2937; color:#e5e7eb; border:1px solid #374151; border-radius:4px;
+  padding:5px 12px; cursor:pointer; font-size:13px; white-space:nowrap; display:inline-flex; align-items:center; gap:4px;
+}
+.toolbar-extra-controls button:hover { background:#2d3748; }
+.toolbar-extra-controls button.active { background:#2563eb; color:#fff; border-color:#2563eb; }
 /*  DASHBOARD  */
 .admin-stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
 .admin-stat {
@@ -240,9 +257,13 @@ body {
   .admin-content { padding: 1.5rem 1rem; }
 }
 #editor-container { border:1px solid #334155; border-radius:8px; overflow:hidden; background:#0b1220; }
-.ql-toolbar.ql-snow { background:#111827; padding:10px; }
+.ql-toolbar.ql-snow { background:#111827; padding:10px; position: sticky; top: 60px; z-index: 50; }
 .ql-container.ql-snow { border:0 !important; }
 .ql-editor { min-height:360px; font-family:Arial,sans-serif; font-size:15px; line-height:1.8; }
+.ql-editor code {
+  background: #0e1a24 !important; color: var(--neon-blue) !important; border: 1px solid #1f2937;
+  padding: 2px 6px; border-radius: 4px; font-family: 'Share Tech Mono', monospace;
+}
 .ql-snow .ql-picker-options { background:#111827; border-color:#334155; }
 .ql-snow .ql-fill { fill:#aab8cc; } .ql-snow .ql-picker-label { color:#aab8cc; }
 #editor-status { padding:8px 12px; background:#111827; color:#94a3b8; font:11px var(--mono); border-top:1px solid #334155; }</style>
@@ -279,6 +300,7 @@ body {
           <button class="admin-tab" onclick="switchTab('skills', this)">Skills</button>
           <button class="admin-tab" onclick="switchTab('experience', this)">Experience</button>
           <button class="admin-tab" onclick="switchTab('education', this)">Education</button>
+          <button class="admin-tab" onclick="switchTab('testimonials', this)">Testimonials</button>
           <button class="admin-tab" onclick="switchTab('projects', this)">Projects</button>
           <button class="admin-tab" onclick="switchTab('blog', this)">Blog</button>
           <button class="admin-tab" onclick="switchTab('messages', this)">Messages</button><button class="admin-tab" onclick="switchTab('media', this);loadMediaLibrary()">Media</button>
@@ -310,9 +332,10 @@ body {
         <button class="btn-save" onclick="switchTab('skills', document.querySelectorAll('.admin-tab')[2])">Skills</button>
         <button class="btn-save" onclick="switchTab('experience', document.querySelectorAll('.admin-tab')[3])">Experience</button>
         <button class="btn-save" onclick="switchTab('education', document.querySelectorAll('.admin-tab')[4])">Education</button>
-        <button class="btn-save" onclick="switchTab('projects', document.querySelectorAll('.admin-tab')[5])">Projects</button>
-        <button class="btn-save" onclick="switchTab('blog', document.querySelectorAll('.admin-tab')[6])">Write a Post</button>
-        <button class="btn-save" onclick="switchTab('messages', document.querySelectorAll('.admin-tab')[7])">Messages</button>
+        <button class="btn-save" onclick="switchTab('testimonials', document.querySelectorAll('.admin-tab')[5])">Testimonials</button>
+        <button class="btn-save" onclick="switchTab('projects', document.querySelectorAll('.admin-tab')[6])">Projects</button>
+        <button class="btn-save" onclick="switchTab('blog', document.querySelectorAll('.admin-tab')[7])">Write a Post</button>
+        <button class="btn-save" onclick="switchTab('messages', document.querySelectorAll('.admin-tab')[8])">Messages</button>
         <a href="index.html" target="_blank" class="btn-save" style="text-decoration:none;">View Live Site </a>
       </div>
     </div>
@@ -356,6 +379,12 @@ body {
   <input type="file" id="p-cv-file" accept="application/pdf" onchange="uploadCV(event)">
   <input type="hidden" id="p-cv_url">
   <div id="cv-current-link" style="font-size:12px;color:var(--muted);margin-top:4px;"></div>
+</div>
+              <div class="admin-input-group">
+  <label>ONE-PAGE RESUME (PDF, optional - a shorter version distinct from the full CV above)</label>
+  <input type="file" id="p-resume-file" accept="application/pdf" onchange="uploadResume(event)">
+  <input type="hidden" id="p-resume_url">
+  <div id="resume-current-link" style="font-size:12px;color:var(--muted);margin-top:4px;"></div>
 </div>
               <div class="admin-input-group"><label>HERO TAGLINE</label><textarea id="p-tagline"></textarea></div>
               <div class="row">
@@ -423,6 +452,19 @@ body {
         </div>
       </div>
 
+      <!-- TESTIMONIALS -->
+      <div class="admin-pane" id="pane-testimonials">
+        <div class="admin-section">
+          <div class="admin-section-title">Testimonials &amp; Recommendations</div>
+          <p class="small-hint" style="margin-bottom:1rem;">Quotes from managers or colleagues. Hidden from the live site automatically when empty.</p>
+          <div id="testimonials-list"></div>
+          <div style="display:flex;gap:0.75rem;">
+            <button class="btn-save" onclick="addTestimonialRow()">+ Add testimonial</button>
+            <button class="btn-save" onclick="saveTestimonials()">Save testimonials</button>
+          </div>
+        </div>
+      </div>
+
       <!-- PROJECTS -->
       <div class="admin-pane" id="pane-projects">
         <div class="admin-section">
@@ -485,7 +527,7 @@ body {
             <input type="hidden" id="post-id">
             <div class="admin-edit-form" style="padding:0;">
               <div class="admin-input-group"><label>TITLE</label><input type="text" id="post-title" onkeyup="autoSlug()"></div>
-              <div class="admin-input-group"><label>URL SLUG</label><input type="text" id="post-slug"></div><div class="row"><div class="admin-input-group"><label>CATEGORY</label><input type="text" id="post-category" value="General"></div><div class="admin-input-group"><label>TAGS (comma separated)</label><input type="text" id="post-tags" placeholder="networking, security"></div></div>
+              <div class="admin-input-group"><label>URL SLUG</label><input type="text" id="post-slug"></div><div class="row"><div class="admin-input-group"><label>CATEGORY</label><input type="text" id="post-category" value="General"></div><div class="admin-input-group"><label>SUBCATEGORY (optional)</label><input type="text" id="post-subcategory" placeholder="e.g. Routing, IAM, Terraform"></div><div class="admin-input-group"><label>TAGS (comma separated)</label><input type="text" id="post-tags" placeholder="networking, security"></div></div>
               <div class="admin-input-group"><label>EXCERPT (shown on blog list)</label><textarea id="post-excerpt"></textarea></div>
               <div class="admin-input-group">
                 <label>COVER IMAGE</label>
@@ -495,7 +537,50 @@ body {
               </div>
               <div class="admin-input-group">
                 <label>CONTENT</label>
-                <div id="editor-container"><div id="editor"></div><div id="editor-status">0 words | Draft autosaves every 30 seconds</div></div>
+              <div id="editor-container">
+ <div id="editor-toolbar">
+  <div class="toolbar-row">
+    <span class="ql-formats">
+      <select class="ql-header"><option value="1"></option><option value="2"></option><option value="3"></option><option selected></option></select>
+    </span>
+    <span class="ql-formats">
+      <select class="ql-font"></select>
+      <select class="ql-size"></select>
+    </span>
+    <span class="ql-formats">
+      <button class="ql-bold"></button><button class="ql-italic"></button>
+      <button class="ql-underline"></button><button class="ql-strike"></button>
+    </span>
+    <span class="ql-formats">
+      <select class="ql-color"></select><select class="ql-background"></select>
+    </span>
+    <span class="ql-formats">
+      <button class="ql-link"></button><button class="ql-image"></button>
+    </span>
+    <span class="ql-formats toolbar-extra-controls">
+      <button type="button" id="btn-freeze" onclick="toggleFreeze()" title="Freeze toolbar">📌 Freeze</button>
+    </span>
+  </div>
+  <div class="toolbar-row">
+    <span class="ql-formats">
+      <select class="ql-align"></select>
+      <button class="ql-list" value="ordered"></button><button class="ql-list" value="bullet"></button>
+    </span>
+    <span class="ql-formats">
+      <button class="ql-indent" value="-1"></button><button class="ql-indent" value="+1"></button>
+      <button class="ql-script" value="sub"></button><button class="ql-script" value="super"></button>
+    </span>
+    <span class="ql-formats">
+      <button class="ql-blockquote"></button><button class="ql-code-block"></button>
+    </span>
+    <span class="ql-formats">
+      <button class="ql-clean"></button>
+    </span>
+  </div>
+</div>
+  <div id="editor"></div>
+  <div id="editor-status">0 words | Draft autosaves every 30 seconds</div>
+</div>
               </div>
             </div>
             <div class="admin-btn-row">
@@ -582,12 +667,15 @@ async function enterPanel(user){
   document.getElementById('admin-panel').classList.add('visible');
   document.getElementById('whoami').textContent = 'Signed in as ' + user.email;
   if (!quill) {
-  Quill.register('modules/imageResize', ImageResize.default);
-  quill = new Quill('#editor', { theme: 'snow', placeholder: 'Write your article here...', modules: { toolbar: [
-    [{ header: [1,2,3,false] }], ['bold','italic','underline','strike'], ['link','image'],
-    [{ color: [] }, { background: [] }], [{ align: [] }], [{list:'ordered'},{list:'bullet'}],
-    ['blockquote','code-block'], ['clean']
-  ], imageResize: { modules: ['Resize', 'DisplaySize'] } }});
+Quill.register('modules/imageResize', ImageResize.default);
+quill = new Quill('#editor', {
+  theme: 'snow',
+  placeholder: 'Write your article here...',
+  modules: {
+    toolbar: '#editor-toolbar',
+    imageResize: { modules: ['Resize', 'DisplaySize'] }
+  }
+});
   const updateEditorStatus = () => { const words = quill.getText().trim().split(/\s+/).filter(Boolean).length; document.getElementById('editor-status').textContent = `${words} words | Draft autosaves every 30 seconds`; };
   quill.on('text-change', updateEditorStatus); updateEditorStatus();
 }
@@ -598,6 +686,13 @@ async function enterPanel(user){
 supabaseClient.auth.getSession().then(({ data }) => {
   if (data.session) enterPanel(data.session.user);
 });
+function toggleFreeze(){
+  const toolbar = document.getElementById('editor-toolbar');
+  const btn = document.getElementById('btn-freeze');
+  toolbar.classList.toggle('toolbar-frozen');
+  btn.classList.toggle('active');
+}
+
 
 function switchTab(id, btn){
   document.querySelectorAll('.admin-pane').forEach(p => p.classList.remove('active'));
@@ -606,7 +701,7 @@ function switchTab(id, btn){
   btn.classList.add('active');
 }
 
-let siteContent = { profile:{}, skills:[], experience:[], education:[], awards:[] };
+let siteContent = { profile:{}, skills:[], experience:[], education:[], awards:[], testimonials:[] };
 
 async function loadAllAdminData(){
   const { data: content } = await supabaseClient.from('site_content').select('*').eq('id',1).single();
@@ -616,6 +711,7 @@ async function loadAllAdminData(){
   renderExperienceEditor(siteContent.experience || []);
   renderEducationEditor(siteContent.education || []);
   renderAwardsEditor(siteContent.awards || []);
+  renderTestimonialsEditor(siteContent.testimonials || []);
 
   await loadProjectsAdmin();
   await loadPostsAdmin();
@@ -705,6 +801,8 @@ function fillProfileForm(p){
   document.getElementById('p-photo_url').value = p.photo_url || '';
   document.getElementById('p-cv_url').value = p.cv_url || '';
   document.getElementById('cv-current-link').innerHTML = p.cv_url ? `OK Current CV - <a href="${p.cv_url}" target="_blank" style="color:var(--accent);">view</a>` : 'No CV uploaded yet.';
+  document.getElementById('p-resume_url').value = p.resume_url || '';
+  document.getElementById('resume-current-link').innerHTML = p.resume_url ? `OK Current resume - <a href="${p.resume_url}" target="_blank" style="color:var(--accent);">view</a>` : 'No resume uploaded yet.';
   document.getElementById('p-email').value = p.email || '';
   document.getElementById('p-phone').value = p.phone || '';
   document.getElementById('p-location').value = p.location || '';
@@ -725,6 +823,7 @@ async function saveProfile(){
     availability_tag: document.getElementById('p-availability_tag').value.trim(),
     photo_url: document.getElementById('p-photo_url').value.trim(),
     cv_url: document.getElementById('p-cv_url').value.trim(),
+    resume_url: document.getElementById('p-resume_url').value.trim(),
     tagline: document.getElementById('p-tagline').value.trim(),
     email: document.getElementById('p-email').value.trim(),
     phone: document.getElementById('p-phone').value.trim(),
@@ -880,6 +979,34 @@ async function saveAwards(){
   showSave(error ? 'X ' + error.message : 'OK Awards saved - live on site now');
 }
 
+//  TESTIMONIALS 
+function renderTestimonialsEditor(testimonials){
+  document.getElementById('testimonials-list').innerHTML = testimonials.map((t,i) => `
+    <div class="list-row">
+      <div class="list-row-head"><span>TESTIMONIAL ${i+1}</span><button class="btn-danger" onclick="removeTestimonialRow(${i})">Remove</button></div>
+      <div class="admin-input-group"><label>QUOTE</label><textarea data-f="quote">${esc(t.quote)}</textarea></div>
+      <div class="admin-input-group"><label>NAME</label><input type="text" data-f="name" value="${esc(t.name)}"></div>
+      <div class="admin-input-group"><label>ROLE / COMPANY</label><input type="text" data-f="role" value="${esc(t.role)}"></div>
+      <div class="admin-input-group"><label>AVATAR URL (optional)</label><input type="text" data-f="avatar_url" value="${esc(t.avatar_url)}"></div>
+    </div>
+  `).join('') || '<p class="small-hint">None yet - add one below.</p>';
+}
+function addTestimonialRow(){ siteContent.testimonials = siteContent.testimonials || []; siteContent.testimonials.push({quote:'',name:'',role:'',avatar_url:''}); renderTestimonialsEditor(siteContent.testimonials); }
+function removeTestimonialRow(i){ siteContent.testimonials.splice(i,1); renderTestimonialsEditor(siteContent.testimonials); }
+function readTestimonialsFromDOM(){
+  return [...document.querySelectorAll('#testimonials-list .list-row')].map(row => ({
+    quote: row.querySelector('[data-f=quote]').value.trim(),
+    name: row.querySelector('[data-f=name]').value.trim(),
+    role: row.querySelector('[data-f=role]').value.trim(),
+    avatar_url: row.querySelector('[data-f=avatar_url]').value.trim()
+  }));
+}
+async function saveTestimonials(){
+  siteContent.testimonials = readTestimonialsFromDOM();
+  const { error } = await supabaseClient.from('site_content').update({ testimonials: siteContent.testimonials, updated_at: new Date().toISOString() }).eq('id',1);
+  showSave(error ? 'X ' + error.message : 'OK Testimonials saved - live on site now');
+}
+
 //  PROJECTS 
 async function loadProjectsAdmin(){
   const { data: projects } = await supabaseClient.from('projects').select('*').order('sort_order');
@@ -1013,7 +1140,7 @@ async function editPost(id){
   document.getElementById('post-title').value = p.title;
   document.getElementById('post-slug').value = p.slug;
   document.getElementById('post-slug').dataset.manual = 'true';
-  document.getElementById('post-excerpt').value = p.excerpt; document.getElementById('post-category').value = p.category || 'General'; document.getElementById('post-tags').value = (p.tags||[]).join(', ');
+  document.getElementById('post-excerpt').value = p.excerpt; document.getElementById('post-category').value = p.category || 'General'; document.getElementById('post-subcategory').value = p.subcategory || ''; document.getElementById('post-tags').value = (p.tags||[]).join(', ');
   document.getElementById('post-cover-url').value = p.cover_image_url || '';
   const preview = document.getElementById('cover-preview');
   if (p.cover_image_url) { preview.src = p.cover_image_url; preview.style.display = 'block'; } else { preview.style.display = 'none'; }
@@ -1026,7 +1153,7 @@ function clearPostForm(){
   document.getElementById('post-title').value = '';
   document.getElementById('post-slug').value = '';
   document.getElementById('post-slug').dataset.manual = 'false';
-  document.getElementById('post-excerpt').value = ''; document.getElementById('post-category').value = 'General'; document.getElementById('post-tags').value = '';
+  document.getElementById('post-excerpt').value = ''; document.getElementById('post-category').value = 'General'; document.getElementById('post-subcategory').value = ''; document.getElementById('post-tags').value = '';
   document.getElementById('post-cover-url').value = '';
   document.getElementById('cover-preview').style.display = 'none';
   if (quill) quill.root.innerHTML = '';
@@ -1039,7 +1166,7 @@ async function savePost(status){
   if (!title || !slug) { showSave('X Title and slug are required'); return; }
   const payload = {
     title, slug,
-    excerpt: document.getElementById('post-excerpt').value.trim(), category: document.getElementById('post-category').value.trim() || 'General', tags: document.getElementById('post-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
+    excerpt: document.getElementById('post-excerpt').value.trim(), category: document.getElementById('post-category').value.trim() || 'General', subcategory: document.getElementById('post-subcategory').value.trim() || null, tags: document.getElementById('post-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
     cover_image_url: document.getElementById('post-cover-url').value.trim() || null,
     content_html: quill.root.innerHTML,
     status,
@@ -1051,14 +1178,26 @@ async function savePost(status){
     ? await supabaseClient.from('blog_posts').update(payload).eq('id', id)
     : await supabaseClient.from('blog_posts').insert(payload);
   showSave(error ? 'X ' + error.message : (status==='published' ? 'OK Published - live on your blog now' : 'OK Draft saved'));
+  if (!error && status === 'published') regenerateRss();
   clearPostForm();
   loadPostsAdmin();
   loadDashboardStats();
 }
+async function regenerateRss(){
+  const { data: posts } = await supabaseClient.from('blog_posts').select('title,slug,excerpt,published_at').eq('status','published').order('published_at',{ascending:false}).limit(30);
+  const siteUrl = 'https://murathmusni.com';
+  const rssEsc = s => (s||'').toString().replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  const items = (posts||[]).map(p => `<item><title>${rssEsc(p.title)}</title><link>${siteUrl}/post.html?slug=${encodeURIComponent(p.slug)}</link><guid>${siteUrl}/post.html?slug=${encodeURIComponent(p.slug)}</guid><description>${rssEsc(p.excerpt)}</description><pubDate>${new Date(p.published_at).toUTCString()}</pubDate></item>`).join('');
+  const xml = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>Murath Musni — Blog</title><link>${siteUrl}/blog.html</link><description>Networking, cloud security, and IT operations notes.</description><language>en</language><lastBuildDate>${new Date().toUTCString()}</lastBuildDate>${items}</channel></rss>`;
+  const blob = new Blob([xml], { type: 'application/rss+xml' });
+  await supabaseClient.storage.from('media').upload('rss.xml', blob, { upsert: true, contentType: 'application/rss+xml' });
+}
+
 async function deletePost(id){
   if (!confirm('Delete this post? This cannot be undone.')) return;
   const { error } = await supabaseClient.from('blog_posts').delete().eq('id', id);
   showSave(error ? 'X ' + error.message : 'OK Post deleted');
+  if (!error) regenerateRss();
   loadPostsAdmin();
   loadDashboardStats();
 }
@@ -1072,6 +1211,18 @@ async function uploadCV(e){
   document.getElementById('p-cv_url').value = data.publicUrl;
   document.getElementById('cv-current-link').innerHTML = `OK Uploaded - <a href="${data.publicUrl}" target="_blank" style="color:var(--accent);">view current CV</a>`;
   showSave('OK CV uploaded - click "Save changes" below to publish it');
+}
+
+async function uploadResume(e){
+  const file = e.target.files[0];
+  if (!file) return;
+  const path = `resume/${Date.now()}-${file.name.replace(/\s+/g,'-')}`;
+  const { error } = await supabaseClient.storage.from('media').upload(path, file);
+  if (error) { showSave('X Upload failed: ' + error.message); return; }
+  const { data } = supabaseClient.storage.from('media').getPublicUrl(path);
+  document.getElementById('p-resume_url').value = data.publicUrl;
+  document.getElementById('resume-current-link').innerHTML = `OK Uploaded - <a href="${data.publicUrl}" target="_blank" style="color:var(--accent);">view current resume</a>`;
+  showSave('OK Resume uploaded - click "Save changes" below to publish it');
 }
 
 //  MESSAGES 
@@ -1108,6 +1259,6 @@ async function loadMediaLibrary(){const b=document.getElementById('media-library
 async function loadAnalytics(){const b=document.getElementById('dash-analytics');if(!b)return;const r=await supabaseClient.from('page_views').select('post_slug,created_at').gte('created_at',new Date(Date.now()-2592e6).toISOString());const a={};(r.data||[]).forEach(v=>{if(v.post_slug)a[v.post_slug]=(a[v.post_slug]||0)+1});b.innerHTML=`<div class="dash-mini-row"><span class="dash-mini-title">${(r.data||[]).length}</span><span class="dash-mini-sub">page views in 30 days</span></div>`+Object.entries(a).sort((x,y)=>y[1]-x[1]).slice(0,3).map(x=>`<div class="dash-mini-row"><span class="dash-mini-title">${esc(x[0])}</span><span class="dash-mini-sub">${x[1]} reads</span></div>`).join('')}
 const previousStats=loadDashboardStats;loadDashboardStats=async()=>{await previousStats();loadAnalytics()};
 window.loadMessagesAdmin=async function(){const r=await supabaseClient.from('messages').select('*').order('created_at',{ascending:false});document.getElementById('messages-list').innerHTML=(r.data||[]).map(m=>`<div class="admin-log-entry" style="flex-direction:column;align-items:flex-start;gap:6px;"><div style="display:flex;justify-content:space-between;width:100%;"><span class="log-msg"><strong>${esc(m.name)}</strong>  ${esc(m.email)}</span><span class="status-pill ${m.is_read?'green':'blue'}">${m.is_read?'Read':'New'}</span></div><div class="msg-body">${esc(m.message)}</div><div style="display:flex;gap:.5rem;">${!m.is_read?`<button class="btn-save" onclick="markRead('${m.id}')">Mark read</button>`:''}<a class="btn-save" style="text-decoration:none" href="mailto:${esc(m.email)}?subject=Re:%20your%20message%20to%20Murath%20Musni">Reply</a><button class="btn-danger" onclick="deleteMessage('${m.id}')">Delete</button></div></div>`).join('')||'<p class="empty-note">No messages yet.</p>'};
-async function autoSavePost(){const id=document.getElementById('post-id').value,t=document.getElementById('post-title').value.trim(),slug=document.getElementById('post-slug').value.trim();if(!t||!slug)return;const payload={title:t,slug,excerpt:document.getElementById('post-excerpt').value.trim(),category:document.getElementById('post-category').value.trim()||'General',tags:document.getElementById('post-tags').value.split(',').map(x=>x.trim()).filter(Boolean),cover_image_url:document.getElementById('post-cover-url').value.trim()||null,content_html:quill.root.innerHTML,status:'draft',updated_at:new Date().toISOString()};const r=id?await supabaseClient.from('blog_posts').update(payload).eq('id',id):await supabaseClient.from('blog_posts').insert(payload).select().single();if(!id&&!r.error)document.getElementById('post-id').value=r.data.id}setInterval(autoSavePost,30000);
+async function autoSavePost(){const id=document.getElementById('post-id').value,t=document.getElementById('post-title').value.trim(),slug=document.getElementById('post-slug').value.trim();if(!t||!slug)return;const payload={title:t,slug,excerpt:document.getElementById('post-excerpt').value.trim(),category:document.getElementById('post-category').value.trim()||'General',subcategory:document.getElementById('post-subcategory').value.trim()||null,tags:document.getElementById('post-tags').value.split(',').map(x=>x.trim()).filter(Boolean),cover_image_url:document.getElementById('post-cover-url').value.trim()||null,content_html:quill.root.innerHTML,status:'draft',updated_at:new Date().toISOString()};const r=id?await supabaseClient.from('blog_posts').update(payload).eq('id',id):await supabaseClient.from('blog_posts').insert(payload).select().single();if(!id&&!r.error)document.getElementById('post-id').value=r.data.id}setInterval(autoSavePost,30000);
 </script></body>
 </html>

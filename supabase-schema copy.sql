@@ -18,6 +18,7 @@ create table if not exists site_content (
   experience jsonb not null default '[]'::jsonb,
   education jsonb not null default '[]'::jsonb,
   awards jsonb not null default '[]'::jsonb,
+  testimonials jsonb not null default '[]'::jsonb,
   updated_at timestamptz not null default now(),
   constraint single_row check (id = 1)
 );
@@ -173,11 +174,11 @@ insert into projects (title, category, description, tools, status, sort_order) v
 on conflict do nothing;
 
 -- Feature upgrades: run this block in Supabase SQL Editor for existing projects.
+alter table site_content add column if not exists testimonials jsonb not null default '[]'::jsonb;
 alter table projects add column if not exists featured boolean not null default false;
 alter table projects add column if not exists cover_image_url text;
 alter table blog_posts add column if not exists category text not null default 'General';
 alter table blog_posts add column if not exists tags text[] not null default '{}';
-alter table blog_posts add column if not exists subcategory text;
 create table if not exists page_views (
  id bigint generated always as identity primary key,
  page_path text not null,

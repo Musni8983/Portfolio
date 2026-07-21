@@ -4,7 +4,10 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230a0a0a%22/><text x=%2250%22 y=%2270%22 font-size=%2260%22 text-anchor=%22middle%22 fill=%22%2300d9e8%22>&gt;</text></svg>">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="favicon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Murath Musni - IT Executive & Network Engineer - Portfolio</title>
 <meta name="description" content="Murath Musni is an IT Executive and Network Engineer specializing in network design, cloud security, and systems administration. View projects, certifications, and the technical blog.">
 <meta name="robots" content="index, follow">
@@ -30,6 +33,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7615612862600117"
+     crossorigin="anonymous"></script>
 <style>
 /* 
    DESIGN SYSTEM - "Neon Terminal / Cyber-Grid"
@@ -48,11 +53,14 @@
   --neon-violet: #7c3aed;
   --text: #e2e8f0;
   --muted: #94a3b8;
-  --muted2: #4b5768;
+--muted2: #d3e3ff;
   --mono: 'Share Tech Mono', monospace;
   --display: 'Orbitron', sans-serif;
   --radius: 4px;
   --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --hover-text: #ffffff;
+  --hover-glow: rgba(255,255,255,0.85);
+  --hover-glow2: rgba(255,255,255,0.9);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -68,7 +76,7 @@ body {
   font-family: var(--mono);
   line-height: 1.7;
   overflow-x: hidden;
-  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><text y="15" font-size="16" fill="%2300d9e8">&gt;</text></svg>') 8 8, auto;
+  cursor: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMiIgaGVpZ2h0PSIyMiIgdmlld0JveD0iMCAwIDIyIDIyIj48dGV4dCB4PSIxIiB5PSIxNyIgZm9udC1mYW1pbHk9Im1vbm9zcGFjZSIgZm9udC1zaXplPSIxOSIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiMwMGQ5ZTgiPiZndDs8L3RleHQ+PC9zdmc+') 8 8, auto;
 }
 
 h1, h2, h3 {
@@ -94,12 +102,12 @@ a, button, .tag, h1, h2, h3, p, span, li, label, .btn,
 a:hover, button:hover, .tag:hover, h1:hover, h2:hover, h3:hover,
 .nav-links a:hover, .skill-card h3:hover, .exp-role:hover,
 .project-card h3:hover, .cert-title:hover, .stat-num:hover {
-  color: #ffffff !important;
-  text-shadow: 0 0 12px rgba(255,255,255,0.85), 0 0 26px currentColor !important;
+  color: var(--hover-text) !important;
+  text-shadow: 0 0 12px var(--hover-glow), 0 0 26px currentColor !important;
 }
 
 p:hover, span:hover, li:hover, label:hover {
-  color: #ffffff;
+  color: var(--hover-text);
   filter: brightness(1.3);
 }
 
@@ -139,10 +147,10 @@ a:focus-visible, button:focus-visible {
 }
 
 /*  NEON TEXT / GLOW UTILITIES  */
-.neon-text-blue {
-  color: var(--neon-blue);
-  text-shadow: 0 0 10px var(--neon-blue), 0 0 20px rgba(0,217,232,0.6), 0 0 40px rgba(0,217,232,0.35);
-}
+  .neon-text-blue {
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px var(--neon-blue), 0 0 20px rgba(0,217,232,0.6), 0 0 40px rgba(0,217,232,0.35);
+  }
 .neon-text-green {
   color: var(--neon-green);
   text-shadow: 0 0 10px var(--neon-green), 0 0 20px rgba(43,224,138,0.4);
@@ -431,6 +439,28 @@ section.in-view {
 .cert-badge.earned { color: var(--neon-blue); border: 1px solid rgba(0,217,232,0.35); background: rgba(0,217,232,0.08); }
 .cert-badge.progress { color: var(--neon-green); border: 1px solid rgba(43,224,138,0.35); background: rgba(43,224,138,0.08); }
 
+/*  TESTIMONIALS  */
+.testimonial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+.testimonial-card {
+  padding: 1.6rem; border: 1px solid #374151; background: rgba(17,24,39,0.7);
+  display: flex; flex-direction: column; gap: 1rem;
+  transition: box-shadow 0.3s ease; opacity: 0; transform: translateY(24px);
+}
+.testimonial-card.in-view { opacity: 1; transform: translateY(0); }
+.testimonial-card:hover { box-shadow: 0 0 25px rgba(124,58,237,0.2); }
+.testimonial-quote-mark { font-family: var(--display); font-size: 2rem; color: var(--neon-violet); line-height: 1; text-shadow: 0 0 10px rgba(124,58,237,0.5); }
+.testimonial-quote { color: #cbd5e1; font-size: 0.92rem; font-style: italic; flex: 1; }
+.testimonial-author { display: flex; align-items: center; gap: 0.75rem; border-top: 1px solid #1f2937; padding-top: 0.9rem; }
+.testimonial-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1px solid rgba(124,58,237,0.4); flex-shrink: 0; }
+.testimonial-avatar-fallback {
+  width: 38px; height: 38px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.4);
+  color: var(--neon-violet); font-family: var(--display); font-size: 0.85rem;
+}
+.testimonial-name { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+.testimonial-role { font-size: 0.78rem; color: var(--muted); }
+
 /*  CONTACT  */
 .contact-wrap { max-width: 620px; margin: 0 auto; text-align: center; }
 .contact-info p { color: var(--neon-green); margin-bottom: 2rem; }
@@ -456,8 +486,8 @@ section.in-view {
 /* ...but every contact link (including Location) gets a smooth,
    brighter glow + slight lift on hover */
 .contact-link:hover {
-  color: #ffffff;
-  text-shadow: 0 0 14px rgba(255,255,255,0.9), 0 0 28px var(--neon-blue);
+  color: var(--hover-text);
+  text-shadow: 0 0 14px var(--hover-glow2), 0 0 28px var(--neon-blue);
   transform: translateY(-1px);
 }
 .contact-link-icon { display: none; }
@@ -468,6 +498,7 @@ section.in-view {
   width: 100%; background: #1f2937; border: 1px solid #374151; padding: 12px;
   color: var(--text); font-family: var(--mono); font-size: 0.9rem;
   outline: none; transition: all 0.25s ease; resize: none;
+  caret-color: var(--neon-blue);
 }
 .form-group input:focus, .form-group textarea:focus { border-color: var(--neon-blue); box-shadow: 0 0 0 1px var(--neon-blue); }
 .form-group textarea { min-height: 110px; }
@@ -484,8 +515,8 @@ footer {
 /*  save toast  */
 .save-toast {
   display: none; position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
-  z-index: 2000; padding: 12px 24px; border: 1px solid var(--neon-green);
-  background: rgba(10,10,10,0.95); color: var(--neon-green);
+  z-index: 2000; padding: 12px 24px; border: 1px solid #2be08a;
+  background: rgba(10,10,10,0.95); color: #2be08a;
   font-size: 12.5px; letter-spacing: 0.02em; box-shadow: 0 0 20px rgba(43,224,138,0.4);
 }
 .theme-toggle {
@@ -495,27 +526,6 @@ footer {
   transition: all 0.25s var(--ease); margin-right: 0.5rem;
 }
 .theme-toggle:hover { border-color: var(--neon-blue); color: var(--neon-blue); }
-
-body.high-contrast {
-  --bg: #000000;
-  --bg2: #050505;
-  --text: #ffffff;
-  --muted: #d1d5db;
-  --muted2: #9ca3af;
-  --neon-blue: #00f0ff;
-  --neon-green: #00ff88;
-}
-body.high-contrast .about-wrap,
-body.high-contrast .skill-card,
-body.high-contrast .exp-item,
-body.high-contrast .project-card,
-body.high-contrast .cert-card {
-  background: #000000;
-  border-color: #444444;
-}
-body.high-contrast section {
-  background: #000000;
-}
 
 .empty-note { padding: 2rem; text-align: center; color: var(--muted2); font-size: 13px; }
 
@@ -529,12 +539,18 @@ body.high-contrast section {
   .hero-stats { gap: 1.5rem; }
 }
 /* Full light theme */
-body.light-theme { --bg:#f7fafc; --bg2:#edf2f7; --surface:#ffffff; --text:#102235; --muted:#526579; --muted2:#718096; --neon-blue:#007c91; --neon-green:#087a46; background:#f7fafc; }
+body.light-theme { --bg:#eef1f5; --bg2:#e3e8ee; --surface:#f4f6f8; --text:#102235; --muted:#526579; --muted2:#718096; --neon-blue:#007c91; --neon-green:#087a46; --hover-text:#04202b; --hover-glow:rgba(0,124,145,0.35); --hover-glow2:rgba(0,124,145,0.4); background:#eef1f5; }
+body.light-theme .tag { background:#e7eef2; border-color:#cbd5e1; color:#33586b; }
+body.light-theme .save-toast { background:#fff; color:#087a46; box-shadow:0 0 20px rgba(8,122,70,0.2); }
 body.light-theme #canvas-bg, body.light-theme #network-canvas, body.light-theme #hero-scanner { opacity:.12; }
-body.light-theme #hero::before { background:rgba(255,255,255,.62); }
-body.light-theme section { background:rgba(255,255,255,.74); border-color:rgba(0,85,110,.12); }
-body.light-theme .about-wrap, body.light-theme .skill-card, body.light-theme .exp-item, body.light-theme .project-card, body.light-theme .cert-card { background:#fff; border-color:#cbd5e1; box-shadow:0 5px 20px rgba(15,35,55,.06); }
-body.light-theme .about-wrap p, body.light-theme .project-desc, body.light-theme .exp-list li { color:#334155; }
+body.light-theme #hero::before { background:rgba(238,241,245,.62); }
+body.light-theme section { background:rgba(244,246,248,.74); border-color:rgba(0,85,110,.12); }
+body.light-theme .about-wrap, body.light-theme .skill-card, body.light-theme .exp-item, body.light-theme .project-card, body.light-theme .cert-card, body.light-theme .testimonial-card { background:#f6f8fa; border-color:#cbd5e1; box-shadow:0 5px 20px rgba(15,35,55,.06); }
+body.light-theme .about-wrap p, body.light-theme .project-desc, body.light-theme .exp-list li, body.light-theme .testimonial-quote, body.light-theme .project-box span { color:#334155; }
+body.light-theme .testimonial-author { border-color:#cbd5e1; }
+body.light-theme .project-box.problem { border-color:#dc2626; background:rgba(220,38,38,0.06); }
+body.light-theme .project-box.problem strong { color:#b91c1c; }
+body.light-theme .edu-detail-text { color:#334155; }
 body.light-theme nav { background:rgba(247,250,252,.94); border-color:#cbd5e1; }
 body.light-theme .form-group input, body.light-theme .form-group textarea { background:#fff; color:#102235; border-color:#94a3b8; }
 body.light-theme .theme-toggle { border-color:#007c91; color:#007c91; }</style>
@@ -549,15 +565,27 @@ body.light-theme .theme-toggle { border-color:#007c91; color:#007c91; }</style>
 
 <nav>
   <div class="nav-inner">
-    <span class="nav-logo neon-text-blue" id="f-nav-logo">&lt;PORTFOLIO /&gt;</span>
+    <a href="index.html" style="display:flex;align-items:center;gap:.5rem;text-decoration:none;">
+      <img src="nav-logo.png" alt="Logo" style="height:32px;width:auto;">
+      <span class="nav-logo neon-text-blue" id="f-nav-logo">&lt;PORTFOLIO /&gt;</span>
+    </a>
     <div class="telemetry" id="telemetry">
-      <span><span class="dot"></span>SECURE</span>
-      <span class="lock">LOCKED TLS 1.3</span>
-      <span id="telemetry-clock">00:00:00 UTC</span><span id="live-viewers">VIEWERS ONLINE</span>
-    </div>
+  <span><span class="dot"></span>SECURE</span>
+</div>
     <ul class="nav-links">
-      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Switch to light theme">LIGHT</button>
-
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Switch to light theme" aria-label="Toggle theme">
+  <svg id="theme-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="4"></circle>
+    <line x1="12" y1="2" x2="12" y2="4"></line>
+    <line x1="12" y1="20" x2="12" y2="22"></line>
+    <line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line>
+    <line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line>
+    <line x1="2" y1="12" x2="4" y2="12"></line>
+    <line x1="20" y1="12" x2="22" y2="12"></line>
+    <line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line>
+    <line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line>
+  </svg>
+</button>
       <li><a href="#about">About</a></li>
       <li><a href="#skills">Skills</a></li>
       <li><a href="#experience">Experience</a></li>
@@ -584,6 +612,7 @@ body.light-theme .theme-toggle { border-color:#007c91; color:#007c91; }</style>
       <a href="#projects" class="btn btn-primary">View Projects</a>
       
       <a href="#" class="btn btn-ghost" id="f-cv-cta" target="_blank" rel="noopener" style="display:none;">Download CV</a>
+      <a href="#" class="btn btn-ghost" id="f-resume-cta" target="_blank" rel="noopener" style="display:none;">Download Resume</a>
     </div>
     <div class="hero-stats" id="f-stats"></div>
   </div>
@@ -621,7 +650,12 @@ body.light-theme .theme-toggle { border-color:#007c91; color:#007c91; }</style>
   </div>
 </section>
 
-<section id="testimonials"><div class="section-inner"><h2 class="section-label green"><span class="slashes">//</span>Recommendations</h2><div class="about-wrap"><p style="color:var(--muted);">Recommendations from managers and colleagues will appear here.</p></div></div></section>
+<section id="testimonials">
+  <div class="section-inner">
+    <h2 class="section-label"><span class="slashes">//</span>What Colleagues Say</h2>
+    <div class="testimonial-grid" id="f-testimonials"></div>
+  </div>
+</section>
 
 <section id="education">
   <div class="section-inner">
@@ -665,7 +699,7 @@ body.light-theme .theme-toggle { border-color:#007c91; color:#007c91; }</style>
 
 <footer>
   <div id="f-footer-links">
-    <a href="admin.html">Admin -> Sign in</a>
+    
   </div>
   <p> 2026 <span id="f-footer-name">Murath Musni</span>. All rights reserved.</p>
 </footer>
@@ -686,18 +720,25 @@ function toDriveDownloadLink(url){
   return url;
 }
 const COLOR_MAP = { green: '43,224,138', blue: '0,217,232', violet: '124,58,237', orange: '255,160,0', red: '239,68,68' };
-function colorRGB(key){ return COLOR_MAP[key] || COLOR_MAP.green; }
-function colorStyle(key){ const rgb = colorRGB(key); return `color: rgb(${rgb}); text-shadow: 0 0 10px rgba(${rgb},0.35);`; }
+const COLOR_MAP_LIGHT = { green: '8,122,70', blue: '0,124,145', violet: '109,40,217', orange: '180,83,9', red: '185,28,28' };
+function colorRGB(key){ const map = document.body.classList.contains('light-theme') ? COLOR_MAP_LIGHT : COLOR_MAP; return map[key] || map.green; }
+function colorStyle(key){
+  const light = document.body.classList.contains('light-theme');
+  const rgb = colorRGB(key);
+  return light ? `color: rgb(${rgb});` : `color: rgb(${rgb}); text-shadow: 0 0 10px rgba(${rgb},0.35);`;
+}
 
 async function loadSite(){
   try {
     const { data: content, error: e1 } = await supabaseClient.from('site_content').select('*').eq('id', 1).single();
     if (e1) throw e1;
+    window.latestSiteContent = content;
     renderProfile(content.profile || {});
     renderSkills(content.skills || []);
     renderExperience(content.experience || []);
     renderEducation(content.education || []);
     renderAwards(content.awards || []);
+    renderTestimonials(content.testimonials || []);
 
     const { data: projects } = await supabaseClient.from('projects').select('*').eq('status','Published').order('sort_order');
     renderProjects(projects || []);
@@ -706,6 +747,19 @@ async function loadSite(){
     document.getElementById('f-name').textContent = 'Set up config.js';
     document.getElementById('f-tagline').textContent = 'Add your Supabase URL and anon key in config.js to load live content.';
   }
+}
+
+// Re-render the sections whose colors are baked in as inline styles (skills,
+// experience, education, projects) so switching theme updates already-rendered
+// elements instead of leaving them stuck with whichever theme was active on load.
+function reapplyDynamicColors(){
+  const c = window.latestSiteContent;
+  if (c) {
+    renderSkills(c.skills || []);
+    renderExperience(c.experience || []);
+    renderEducation(c.education || []);
+  }
+  if (window.latestProjects) renderProjects(window.latestProjects);
 }
 
 function renderProfile(p){
@@ -720,6 +774,9 @@ function renderProfile(p){
 const cvBtn = document.getElementById('f-cv-cta');
 if (p.cv_url) { cvBtn.href = toDriveDownloadLink(p.cv_url); cvBtn.style.display = ''; }
 else { cvBtn.style.display = 'none'; }
+const resumeBtn = document.getElementById('f-resume-cta');
+if (p.resume_url) { resumeBtn.href = toDriveDownloadLink(p.resume_url); resumeBtn.style.display = ''; }
+else { resumeBtn.style.display = 'none'; }
   document.getElementById('f-about-bio').textContent = p.summary || p.tagline || '';
   const roleEl = document.getElementById('f-current-role');
   roleEl.innerHTML = p.current_role ? `<strong>Current Role:</strong> ${esc(p.current_role)}` : '';
@@ -748,7 +805,7 @@ document.getElementById('f-contact-links').innerHTML = `
   if (p.github) footerLinks.push(`<a href="https://${esc(p.github)}" target="_blank">GitHub</a>`);
   if (p.linkedin) footerLinks.push(`<a href="https://${esc(p.linkedin)}" target="_blank">LinkedIn</a>`);
   if (p.cv_url) footerLinks.push(`<a href="${esc(toDriveDownloadLink(p.cv_url))}" target="_blank">Download CV</a>`);
-  footerLinks.push(`<a href="admin.html">Admin -> Sign in</a>`);
+  if (p.resume_url) footerLinks.push(`<a href="${esc(toDriveDownloadLink(p.resume_url))}" target="_blank">Download Resume</a>`);
   document.getElementById('f-footer-links').innerHTML = footerLinks.join('');
 }
 
@@ -853,7 +910,7 @@ function renderEducation(edu){
           </div>
           ${e.details ? `<span id="icon-edu${i}-details" class="accordion-toggle" style="${colorStyle(e.color)}">+</span>` : ''}
         </div>
-        ${e.details ? `<div id="edu${i}-details" class="detail-panel"><p style="font-size:0.85rem;color:#cbd5e1;margin-top:0.5rem;">${esc(e.details)}</p></div>` : ''}
+        ${e.details ? `<div id="edu${i}-details" class="detail-panel"><p class="edu-detail-text" style="font-size:0.85rem;margin-top:0.5rem;">${esc(e.details)}</p></div>` : ''}
       </div>
     </div>
   `).join('') || '<div class="empty-note">No education added yet.</div>';
@@ -871,8 +928,32 @@ function renderAwards(awards){
   `).join('');
 }
 
-async function updateLiveViewers(){const el=document.getElementById("live-viewers");const r=await supabaseClient.from("page_views").select("*",{count:"exact",head:true}).gte("created_at",new Date(Date.now()-300000).toISOString());if(el)el.textContent=`? ${(r.count||0)+1} viewing`} loadSite(); updateLiveViewers();
+function renderTestimonials(testimonials){
+  const section = document.getElementById('testimonials');
+  if (!testimonials.length) { if (section) section.style.display = 'none'; return; }
+  if (section) section.style.display = '';
+  document.getElementById('f-testimonials').innerHTML = testimonials.map(t => {
+    const initials = (t.name || '?').trim().split(/\s+/).map(w => w[0]).slice(0,2).join('').toUpperCase();
+    return `
+    <div class="testimonial-card">
+      <div class="testimonial-quote-mark">&ldquo;</div>
+      <p class="testimonial-quote">${esc(t.quote)}</p>
+      <div class="testimonial-author">
+        ${t.avatar_url
+          ? `<img class="testimonial-avatar" src="${esc(t.avatar_url)}" alt="${esc(t.name)}">`
+          : `<div class="testimonial-avatar-fallback">${esc(initials)}</div>`}
+        <div>
+          <div class="testimonial-name">${esc(t.name)}</div>
+          <div class="testimonial-role">${esc(t.role)}</div>
+        </div>
+      </div>
+    </div>
+  `}).join('');
+}
 
+async function updateLiveViewers(){const el=document.getElementById("live-viewers");const r=await supabaseClient.from("page_views").select("*",{count:"exact",head:true}).gte("created_at",new Date(Date.now()-300000).toISOString());if(el)el.innerHTML=`<span class="dot" style="background:var(--neon-green);box-shadow:0 0 6px var(--neon-green);"></span>${(r.count||0)+1} viewing`}
+async function logHomeView(){try{await supabaseClient.from("page_views").insert({page_path:"index.html"});}catch(e){}}
+loadSite(); logHomeView();
 document.getElementById('contact-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const name = document.getElementById('cf-name').value.trim();
@@ -903,8 +984,7 @@ function tickClock() {
   const ss = String(now.getUTCSeconds()).padStart(2, '0');
   el.textContent = `${hh}:${mm}:${ss} UTC`;
 }
-tickClock();
-setInterval(tickClock, 1000);
+
 
 //  scroll progress bar 
 //  accordion toggle for project & experience detail panels 
@@ -1238,7 +1318,7 @@ try {
 // can never be skipped by an unrelated failure elsewhere on the page.
 // 
 function revealChildren(section) {
-  const items = section.querySelectorAll('.skill-card, .project-card, .cert-card, .exp-item');
+  const items = section.querySelectorAll('.skill-card, .project-card, .cert-card, .exp-item, .testimonial-card');
   items.forEach((el, i) => {
     if (!el.classList.contains('in-view')) {
       el.style.transitionDelay = Math.min(i * 60, 480) + 'ms';
@@ -1249,12 +1329,20 @@ function revealChildren(section) {
 function updateThemeControl() {
   const light = document.body.classList.contains('light-theme');
   const button = document.getElementById('theme-toggle');
-  if (button) { button.textContent = light ? 'DARK' : 'LIGHT'; button.title = light ? 'Switch to dark theme' : 'Switch to light theme'; }
+  const icon = document.getElementById('theme-icon');
+  if (button) button.title = light ? 'Switch to dark theme' : 'Switch to light theme';
+  if (icon) {
+    icon.setAttribute('fill', light ? 'currentColor' : 'none');
+    icon.innerHTML = light
+      ? '<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>'
+      : '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>';
+  }
 }
 function toggleTheme() {
   document.body.classList.toggle('light-theme');
   localStorage.setItem('theme', document.body.classList.contains('light-theme') ? 'light' : 'dark');
   updateThemeControl();
+  reapplyDynamicColors();
 }
 (function initTheme(){
   if (localStorage.getItem('theme') === 'light') document.body.classList.add('light-theme');

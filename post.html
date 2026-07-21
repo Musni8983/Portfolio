@@ -1,1 +1,61 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="favicon.svg"><title>Article - Murath Musni</title><script src="https://unpkg.com/@supabase/supabase-js@2"></script><style>:root{--bg:#0a0d12;--s:#141920;--b:#ffffff18;--a:#00d4aa;--t:#e8eaf0;--m:#8a94a8;font-family:Arial,sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);line-height:1.75}nav{display:flex;justify-content:space-between;padding:1rem 6%;border-bottom:1px solid var(--b)}a{color:var(--a);text-decoration:none}.logo,.meta,.tag{font-family:monospace}.logo{font-size:.85rem}.wrap{max-width:800px;margin:auto;padding:4rem 1.5rem}.meta{font-size:.72rem;color:var(--m);text-transform:uppercase}.cover{width:100%;max-height:440px;object-fit:cover;border-radius:10px;margin:1.5rem 0}.content{font-size:1.06rem}.content img{max-width:100%;border-radius:8px}.content pre{background:var(--s);padding:1rem;overflow:auto}.tags{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0}.tag{font-size:.7rem;color:var(--a);background:#00d4aa15;padding:.2rem .45rem}.related{margin-top:4rem;border-top:1px solid var(--b);padding-top:2rem}.cards{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}.cards a{background:var(--s);padding:1rem;color:var(--t)}.skeleton{height:460px;background:linear-gradient(90deg,var(--s),#253044,var(--s));background-size:200% 100%;animation:x 1s infinite}@keyframes x{to{background-position:-200%}}</style></head><body><nav><a class="logo" href="index.html">MM // PORTFOLIO</a><span><a href="blog.html">Blog</a>  <a href="rss.xml">RSS</a></span></nav><main class="wrap" id="article"><div class="skeleton"></div></main><script src="config.js"></script><script>const e=s=>(s||'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const slug=new URLSearchParams(location.search).get('slug');const mins=p=>Math.max(1,Math.ceil((p.content_html||'').replace(/<[^>]*>/g,' ').trim().split(/\s+/).filter(Boolean).length/220));(async()=>{const R=document.querySelector('#article');if(!slug){R.innerHTML='<p>Article not specified.</p>';return}const{data:p,error}=await supabaseClient.from('blog_posts').select('*').eq('slug',slug).eq('status','published').single();if(error||!p){R.innerHTML='<p>Article not found. <a href="blog.html">Return to blog</a></p>';return}document.title=p.title+' - Murath Musni';const{data:all}=await supabaseClient.from('blog_posts').select('title,slug,excerpt,category,tags').eq('status','published').neq('id',p.id).order('published_at',{ascending:false}).limit(12);const related=(all||[]).filter(x=>x.category===p.category||(x.tags||[]).some(t=>(p.tags||[]).includes(t))).slice(0,3);R.innerHTML=`<div class="meta">${new Date(p.published_at).toLocaleDateString()}  ${mins(p)} min read  ${e(p.category||'General')}</div><h1>${e(p.title)}</h1><div class="tags">${(p.tags||[]).map(t=>`<span class="tag">#${e(t)}</span>`).join('')}</div>${p.cover_image_url?`<img class="cover" src="${e(p.cover_image_url)}" alt="">`:''}<div class="content">${p.content_html}</div><section class="related"><div class="meta">RELATED POSTS</div><div class="cards">${related.map(x=>`<a href="post.html?slug=${encodeURIComponent(x.slug)}"><strong>${e(x.title)}</strong><br><small>${e(x.excerpt)}</small></a>`).join('')||'<span style="color:var(--m)">More articles coming soon.</span>'}</div></section><p><a href="blog.html"><- All posts</a></p>`;supabaseClient.from('page_views').insert({page_path:'post.html',post_slug:slug}).then(()=>{})})()</script></body></html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="index, follow">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png"><title>Article - Murath Musni</title>
+<meta id="meta-desc" name="description" content="Networking, cloud security, and IT operations notes by Murath Musni.">
+<link id="meta-canonical" rel="canonical" href="https://murathmusni.com/post.html">
+<meta id="og-type" property="og:type" content="article">
+<meta id="og-title" property="og:title" content="Article - Murath Musni">
+<meta id="og-desc" property="og:description" content="Networking, cloud security, and IT operations notes by Murath Musni.">
+<meta id="og-url" property="og:url" content="https://murathmusni.com/post.html">
+<meta id="og-image" property="og:image" content="">
+<meta name="twitter:card" content="summary_large_image">
+<script id="ld-json" type="application/ld+json">{}</script><a class="logo" href="index.html"><img src="nav-logo-simple.svg" alt="Murath Musni logo" class="nav-logo-img"> MM // PORTFOLIO</a>
+<style>
+  .logo{display:flex;align-items:center;gap:.5rem}
+.nav-logo-img{height:32px;width:32px;display:block}
+.logo{display:flex;align-items:center;gap:.6rem}
+
+.ad-slot{padding:1.5rem 0;margin:1.5rem 0;border-top:1px solid var(--b);border-bottom:1px solid var(--b);text-align:center}
+.ad-label{display:block;font-size:.65rem;color:var(--m);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem;font-family:monospace}
+</style>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script><style>:root{--bg:#0a0d12;--s:#141920;--b:#ffffff18;--a:#00d4aa;--t:#e8eaf0;--m:#8a94a8;font-family:Arial,sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);line-height:1.75}nav{display:flex;justify-content:space-between;padding:1rem 6%;border-bottom:1px solid var(--b)}a{color:var(--a);text-decoration:none}.logo,.meta,.tag{font-family:monospace}.logo{font-size:.85rem}.wrap{max-width:800px;margin:auto;padding:4rem 1.5rem}.meta{font-size:.72rem;color:var(--m);text-transform:uppercase}.subcat{color:var(--a)}.cover{width:100%;max-height:440px;object-fit:cover;border-radius:10px;margin:1.5rem 0}.content{font-size:1.06rem}.content img{max-width:100%;border-radius:8px}.content pre{background:var(--s);padding:1rem;overflow:auto}.tags{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0}.tag{font-size:.7rem;color:var(--a);background:#00d4aa15;padding:.2rem .45rem}.related{margin-top:4rem;border-top:1px solid var(--b);padding-top:2rem}.cards{display:grid;gap:1rem;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}.cards a{background:var(--s);padding:1rem;color:var(--t)}.skeleton{height:460px;background:linear-gradient(90deg,var(--s),#253044,var(--s));background-size:200% 100%;animation:x 1s infinite}@keyframes x{to{background-position:-200%}}</style></head><body><nav></nav><main class="wrap" id="article"><div class="skeleton"></div></main><script src="config.js"></script><script>
+const rl=document.querySelector('#rss-link');if(rl){const{data}=supabaseClient.storage.from('media').getPublicUrl('rss.xml');if(data&&data.publicUrl)rl.href=data.publicUrl}
+const e=s=>(s||'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const slug=new URLSearchParams(location.search).get('slug');
+const mins=p=>Math.max(1,Math.ceil((p.content_html||'').replace(/<[^>]*>/g,' ').trim().split(/\s+/).filter(Boolean).length/220));
+(async()=>{
+  const R=document.querySelector('#article');
+  if(!slug){R.innerHTML='<p>Article not specified.</p>';return}
+  const{data:p,error}=await supabaseClient.from('blog_posts').select('*').eq('slug',slug).eq('status','published').single();
+  if(error||!p){R.innerHTML='<p>Article not found. <a href="blog.html">Return to blog</a></p>';return}
+
+  // -- SEO: title, description, canonical, Open Graph, Twitter, JSON-LD Article --
+  const pageUrl='https://murathmusni.com/post.html?slug='+encodeURIComponent(p.slug);
+  document.title=p.title+' - Murath Musni';
+  document.getElementById('meta-desc').setAttribute('content',p.excerpt||p.title);
+  document.getElementById('meta-canonical').setAttribute('href',pageUrl);
+  document.getElementById('og-title').setAttribute('content',p.title);
+  document.getElementById('og-desc').setAttribute('content',p.excerpt||p.title);
+  document.getElementById('og-url').setAttribute('content',pageUrl);
+  if(p.cover_image_url) document.getElementById('og-image').setAttribute('content',p.cover_image_url);
+  document.getElementById('ld-json').textContent=JSON.stringify({
+    "@context":"https://schema.org","@type":"BlogPosting",
+    "headline":p.title,"description":p.excerpt||'',
+    "image":p.cover_image_url||undefined,
+    "datePublished":p.published_at,"dateModified":p.updated_at||p.published_at,
+    "author":{"@type":"Person","name":"Murath Musni"},
+    "mainEntityOfPage":pageUrl
+  });
+
+  const{data:all}=await supabaseClient.from('blog_posts').select('title,slug,excerpt,category,subcategory,tags').eq('status','published').neq('id',p.id).order('published_at',{ascending:false}).limit(12);
+  const related=(all||[]).filter(x=>x.category===p.category||(x.tags||[]).some(t=>(p.tags||[]).includes(t))).slice(0,3);
+
+ R.innerHTML=`<div class="meta">${new Date(p.published_at).toLocaleDateString()} &middot; ${mins(p)} min read &middot; ${e(p.category||'General')}${p.subcategory?` <span class="subcat">/ ${e(p.subcategory)}</span>`:''}</div><h1>${e(p.title)}</h1><div class="tags">${(p.tags||[]).map(t=>`<span class="tag">#${e(t)}</span>`).join('')}</div>${p.cover_image_url?`<img class="cover" src="${e(p.cover_image_url)}" alt="${e(p.title)}">`:''}<div class="content">${p.content_html}</div><div class="ad-slot"><span class="ad-label">Advertisement</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7615612862600117" data-ad-slot="YOUR_ARTICLE_AD_SLOT" data-ad-format="auto" data-full-width-responsive="true"></ins></div><section class="related"><div class="meta">RELATED POSTS</div><div class="cards">${related.map(x=>`<a href="post.html?slug=${encodeURIComponent(x.slug)}"><strong>${e(x.title)}</strong><br><small>${e(x.excerpt)}</small></a>`).join('')||'<span style="color:var(--m)">More articles coming soon.</span>'}</div></section><p><a href="blog.html">&larr; All posts</a></p>`;
+(window.adsbygoogle = window.adsbygoogle || []).push({});
+  supabaseClient.from('page_views').insert({page_path:'post.html',post_slug:slug}).then(()=>{})
+})()
+
+
+</script></body></html>

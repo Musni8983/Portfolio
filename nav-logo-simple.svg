@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="dGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#26e6df"/>
+      <stop offset="100%" stop-color="#00e8a8"/>
+    </linearGradient>
+  </defs>
+  <!-- D bracket stroke -->
+  <path d="M14 10 h16 a20 20 0 0 1 0 44 h-16 v-10 h16 a10 10 0 0 0 0 -24 h-16 z"
+        fill="url(#dGrad)"/>
+  <!-- circuit node accents -->
+  <circle cx="14" cy="10" r="3.4" fill="url(#dGrad)"/>
+  <circle cx="14" cy="54" r="3.4" fill="url(#dGrad)"/>
+  <circle cx="41" cy="32" r="3.2" fill="#0a0d12"/>
+  <circle cx="41" cy="32" r="1.6" fill="url(#dGrad)"/>
+  <path d="M30 32 h6" stroke="url(#dGrad)" stroke-width="2.4" stroke-linecap="round"/>
+</svg>

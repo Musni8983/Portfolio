@@ -1,2 +1,60 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Networking, cloud security, and IT operations notes by Murath Musni."><link rel="icon" href="favicon.svg"><title>Blog - Murath Musni</title><script src="https://unpkg.com/@supabase/supabase-js@2"></script><style>:root{--bg:#0a0d12;--s:#141920;--b:#ffffff18;--a:#00d4aa;--t:#e8eaf0;--m:#8a94a8;font-family:Arial,sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);line-height:1.6}a{color:inherit;text-decoration:none}nav{display:flex;justify-content:space-between;padding:1rem 6%;border-bottom:1px solid var(--b)}.logo,.meta,.tag,.filter{font-family:monospace}.logo{color:var(--a)}.links,.filters,.tags{display:flex;gap:.6rem;flex-wrap:wrap}.wrap{max-width:860px;margin:auto;padding:4rem 1.5rem}h1{font-size:clamp(2.5rem,7vw,4rem);margin:.3rem 0}.lead,.excerpt{color:var(--m)}.filters{margin:2rem 0}.filter{padding:.5rem .7rem;background:transparent;color:var(--m);border:1px solid var(--b);cursor:pointer}.filter.active{color:var(--a);border-color:var(--a)}.card{display:block;padding:2rem 0;border-top:1px solid var(--b)}.cover{width:100%;height:250px;object-fit:cover;border-radius:10px;background:var(--s)}h2{margin:.4rem 0}.meta{font-size:.72rem;color:var(--m);text-transform:uppercase}.tag{font-size:.7rem;color:var(--a);background:#00d4aa15;padding:.2rem .45rem}.skeleton{height:180px;margin:1rem 0;background:linear-gradient(90deg,var(--s),#253044,var(--s));background-size:200% 100%;animation:x 1s infinite}@keyframes x{to{background-position:-200%}}.empty{text-align:center;color:var(--m);padding:3rem}</style></head><body><nav><a class="logo" href="index.html">MM // PORTFOLIO</a><div class="links"><a href="index.html">Home</a><a href="rss.xml">RSS</a></div></nav><main class="wrap"><div class="meta">// KNOWLEDGE BASE</div><h1>The Blog</h1><p class="lead">Networking, cloud security, and practical IT notes.</p><div id="filters" class="filters"></div><section id="list"><div class="skeleton"></div><div class="skeleton"></div></section></main><script src="config.js"></script><script>const L=document.querySelector('#list'),F=document.querySelector('#filters');let P=[],A='All';const e=s=>(s||'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const mins=p=>Math.max(1,Math.ceil((p.content_html||'').replace(/<[^>]*>/g,' ').trim().split(/\s+/).filter(Boolean).length/220));function draw(){let cs=['All',...new Set(P.map(p=>p.category||'General'))];F.innerHTML=cs.map(c=>`<button class="filter ${A===c?'active':''}" data-c="${e(c)}">${e(c)}</button>`).join('');F.querySelectorAll('button').forEach(b=>b.onclick=()=>{A=b.dataset.c;draw()});let q=A==='All'?P:P.filter(p=>(p.category||'General')===A);L.innerHTML=q.map(p=>`<a class="card" href="post.html?slug=${encodeURIComponent(p.slug)}">${p.cover_image_url?`<img class="cover" src="${e(p.cover_image_url)}" alt="">`:''}<div class="meta">${new Date(p.published_at).toLocaleDateString()}  ${mins(p)} min read  ${e(p.category||'General')}</div><h2>${e(p.title)}</h2><p class="excerpt">${e(p.excerpt)}</p><div class="tags">${(p.tags||[]).map(t=>`<span class="tag">#${e(t)}</span>`).join('')}</div></a>`).join('')||'<p class="empty">No posts here yet.</p>'}(async()=>{let{data,error}=await supabaseClient.from('blog_posts').select('*').eq('status','published').order('published_at',{ascending:false});if(error){L.innerHTML='<p class="empty">Unable to load posts.</p>';return}P=data||[];draw();supabaseClient.from('page_views').insert({page_path:'blog.html'}).then(()=>{})})()</script></body></html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Networking, cloud security, and IT operations notes by Murath Musni.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://murathmusni.com/blog.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="The Blog - Murath Musni">
+<meta property="og:description" content="Networking, cloud security, and IT operations notes by Murath Musni.">
+<meta property="og:url" content="https://murathmusni.com/blog.html">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Blog","name":"Murath Musni - Blog","url":"https://murathmusni.com/blog.html","description":"Networking, cloud security, and IT operations notes by Murath Musni."}
+</script>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+  .logo{display:flex;align-items:center;gap:.5rem}
+.nav-logo-img{height:32px;width:32px;display:block}
+.logo{display:flex;align-items:center;gap:.6rem}
+
+.ad-slot{grid-column:1/-1;padding:1.5rem 0;border-top:1px solid var(--b);text-align:center}
+.ad-label{display:block;font-size:.65rem;color:var(--m);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem;font-family:monospace}
+</style>
+<title>Blog - Murath Musni</title><script src="https://unpkg.com/@supabase/supabase-js@2"></script><style>:root{--bg:#0a0d12;--s:#141920;--b:#ffffff18;--a:#00d4aa;--t:#e8eaf0;--m:#8a94a8;font-family:Arial,sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--t);line-height:1.6}a{color:inherit;text-decoration:none}nav{display:flex;justify-content:space-between;padding:1rem 6%;border-bottom:1px solid var(--b)}.logo,.meta,.tag,.filter{font-family:monospace}.logo{color:var(--a)}.links,.filters,.subfilters,.tags{display:flex;gap:.6rem;flex-wrap:wrap}.wrap{max-width:860px;margin:auto;padding:4rem 1.5rem}h1{font-size:clamp(2.5rem,7vw,4rem);margin:.3rem 0}.lead,.excerpt{color:var(--m)}.filters{margin:2rem 0 .75rem}.subfilters{margin:0 0 2rem;padding-left:.2rem}.filter{padding:.5rem .7rem;background:transparent;color:var(--m);border:1px solid var(--b);cursor:pointer;font-size:.8rem}.filter.active{color:var(--a);border-color:var(--a)}.subfilter{padding:.35rem .6rem;background:transparent;color:var(--m);border:1px dashed var(--b);cursor:pointer;font-size:.72rem}.subfilter.active{color:var(--a);border-color:var(--a);border-style:solid}.card{display:block;padding:2rem 0;border-top:1px solid var(--b)}.cover{width:100%;height:250px;object-fit:cover;border-radius:10px;background:var(--s)}h2{margin:.4rem 0}.meta{font-size:.72rem;color:var(--m);text-transform:uppercase}.subcat{color:var(--a)}.tag{font-size:.7rem;color:var(--a);background:#00d4aa15;padding:.2rem .45rem}.skeleton{height:180px;margin:1rem 0;background:linear-gradient(90deg,var(--s),#253044,var(--s));background-size:200% 100%;animation:x 1s infinite}@keyframes x{to{background-position:-200%}}.empty{text-align:center;color:var(--m);padding:3rem}</style></head><body><nav><a class="logo" href="index.html"><img src="nav-logo-simple.svg" alt="Murath Musni logo" class="nav-logo-img"> MM // PORTFOLIO</a></nav><main class="wrap"><div class="meta">// KNOWLEDGE BASE</div><h1>The Blog</h1><p class="lead">Networking, cloud security, and practical IT notes.</p><div id="filters" class="filters"></div><div id="subfilters" class="subfilters"></div><section id="list"><div class="skeleton"></div><div class="skeleton"></div></section></main><script src="config.js"></script><script>
+const rl=document.querySelector('#rss-link');if(rl){const{data}=supabaseClient.storage.from('media').getPublicUrl('rss.xml');if(data&&data.publicUrl)rl.href=data.publicUrl}
+const L=document.querySelector('#list'),F=document.querySelector('#filters'),SF=document.querySelector('#subfilters');
+let P=[],A='All',S='All';
+const e=s=>(s||'').toString().replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const mins=p=>Math.max(1,Math.ceil((p.content_html||'').replace(/<[^>]*>/g,' ').trim().split(/\s+/).filter(Boolean).length/220));
+function draw(){
+  let cs=['All',...new Set(P.map(p=>p.category||'General'))];
+  F.innerHTML=cs.map(c=>`<button class="filter ${A===c?'active':''}" data-c="${e(c)}">${e(c)}</button>`).join('');
+  F.querySelectorAll('button').forEach(b=>b.onclick=()=>{A=b.dataset.c;S='All';draw()});
+
+  // subcategory row only shows when a specific category (not "All") has subcategories
+  let inCat = A==='All' ? P : P.filter(p=>(p.category||'General')===A);
+  let subs=[...new Set(inCat.map(p=>p.subcategory).filter(Boolean))];
+  if(A!=='All' && subs.length){
+    SF.innerHTML=['All',...subs].map(sc=>`<button class="subfilter ${S===sc?'active':''}" data-sc="${e(sc)}">${e(sc)}</button>`).join('');
+    SF.querySelectorAll('button').forEach(b=>b.onclick=()=>{S=b.dataset.sc;draw()});
+  } else { SF.innerHTML=''; }
+
+  let q = inCat;
+  if(A!=='All' && S!=='All') q = q.filter(p=>p.subcategory===S);
+
+ const AD_SLOT = `<div class="ad-slot"><span class="ad-label">Advertisement</span><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7615612862600117" data-ad-slot="YOUR_LIST_AD_SLOT" data-ad-format="auto" data-full-width-responsive="true"></ins></div>`;
+L.innerHTML = q.map((p,i)=>{
+  const card = `<a class="card" href="post.html?slug=${encodeURIComponent(p.slug)}">${p.cover_image_url?`<img class="cover" src="${e(p.cover_image_url)}" alt="">`:''}<div class="meta">${new Date(p.published_at).toLocaleDateString()} &middot; ${mins(p)} min read &middot; ${e(p.category||'General')}${p.subcategory?` <span class="subcat">/ ${e(p.subcategory)}</span>`:''}</div><h2>${e(p.title)}</h2><p class="excerpt">${e(p.excerpt)}</p><div class="tags">${(p.tags||[]).map(t=>`<span class="tag">#${e(t)}</span>`).join('')}</div></a>`;
+  return (i > 0 && i % 3 === 0) ? AD_SLOT + card : card;
+}).join('') || '<p class="empty">No posts here yet.</p>';
+document.querySelectorAll('ins.adsbygoogle:not([data-ad-status])').forEach(()=>{ try{ (window.adsbygoogle = window.adsbygoogle || []).push({}); }catch(err){} });
+}
+(async()=>{
+  let{data,error}=await supabaseClient.from('blog_posts').select('*').eq('status','published').order('published_at',{ascending:false});
+  if(error){L.innerHTML='<p class="empty">Unable to load posts.</p>';return}
+  P=data||[];draw();
+  supabaseClient.from('page_views').insert({page_path:'blog.html'}).then(()=>{})
+})()
+</script></body></html>
