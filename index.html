@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+﻿﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%230a0a0a%22/><text x=%2250%22 y=%2270%22 font-size=%2260%22 text-anchor=%22middle%22 fill=%22%2300d9e8%22>&gt;</text></svg>">
@@ -461,6 +461,16 @@ section.in-view {
 .testimonial-name { font-size: 0.88rem; font-weight: 700; color: var(--text); }
 .testimonial-role { font-size: 0.78rem; color: var(--muted); }
 
+#blog-preview { background: linear-gradient(180deg, rgba(0,217,232,0.06), transparent); border-top: 1px solid rgba(0,217,232,0.25); border-bottom: 1px solid rgba(0,217,232,0.25); padding: 1rem 0; }
+.blog-badge { display:inline-block; font-size:0.7rem; font-weight:700; letter-spacing:0.08em; color:#0a0a0a; background: var(--neon-blue); padding: 0.3rem 0.7rem; border-radius: 3px; margin-bottom: 1rem; text-transform: uppercase; }
+.blog-preview-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+.blog-preview-card { display:block; padding: 1.8rem; border: 1px solid #374151; background: rgba(17,24,39,0.85); text-decoration:none; transition: all 0.3s ease; position: relative; overflow: hidden; }
+.blog-preview-card::before { content:''; position:absolute; top:0; left:0; width:3px; height:100%; background: var(--neon-blue); transform: scaleY(0); transition: transform 0.3s ease; }
+.blog-preview-card:hover { border-color: var(--neon-blue); box-shadow: 0 0 30px rgba(0,217,232,0.25); transform: translateY(-4px); }
+.blog-preview-card:hover::before { transform: scaleY(1); }
+.blog-preview-meta { font-size: 0.72rem; color: var(--neon-blue); text-transform: uppercase; letter-spacing: 0.06em; font-family: var(--mono); margin-bottom: 0.6rem; }
+.blog-preview-card h3 { font-size: 1.2rem; color: var(--text); margin: 0 0 0.6rem; }
+.blog-preview-card p { font-size: 0.88rem; color: var(--muted); margin: 0; line-height:1.6; }
 /*  CONTACT  */
 .contact-wrap { max-width: 620px; margin: 0 auto; text-align: center; }
 .contact-info p { color: var(--neon-green); margin-bottom: 2rem; }
@@ -650,13 +660,6 @@ body.light-theme .theme-toggle { border-color:#007c91; color:#007c91; }</style>
   </div>
 </section>
 
-<section id="testimonials">
-  <div class="section-inner">
-    <h2 class="section-label"><span class="slashes">//</span>What Colleagues Say</h2>
-    <div class="testimonial-grid" id="f-testimonials"></div>
-  </div>
-</section>
-
 <section id="education">
   <div class="section-inner">
     <h2 class="section-label"><span class="slashes">//</span>Education &amp; Certifications</h2>
@@ -666,6 +669,15 @@ body.light-theme .theme-toggle { border-color:#007c91; color:#007c91; }</style>
       <div style="font-size:11px; color:var(--muted2); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:1.25rem;">Awards &amp; Recognition</div>
       <div style="display:flex; flex-direction:column; gap:1rem;" id="f-awards"></div>
     </div>
+  </div>
+</section>
+
+<section id="blog-preview">
+  <div class="section-inner">
+    <span class="blog-badge">Latest Writing</span>
+    <h2 class="section-label"><span class="slashes">//</span>Fresh From the Blog — Worth Your Time</h2>
+    <div class="blog-preview-grid" id="f-blog-preview"></div>
+    <div style="text-align:center; margin-top:2rem;"><a href="blog.html" class="btn-save" style="display:inline-block; text-decoration:none;">Read All Posts &rarr;</a></div>
   </div>
 </section>
 
@@ -742,6 +754,7 @@ async function loadSite(){
 
     const { data: projects } = await supabaseClient.from('projects').select('*').eq('status','Published').order('sort_order');
     renderProjects(projects || []);
+    loadBlogPreview();
   } catch (err) {
     console.error('Could not load live content, check config.js', err);
     document.getElementById('f-name').textContent = 'Set up config.js';
@@ -928,6 +941,19 @@ function renderAwards(awards){
   `).join('');
 }
 
+async function loadBlogPreview(){
+  const grid = document.getElementById('f-blog-preview');
+  if (!grid) return;
+  const { data: posts, error } = await supabaseClient.from('blog_posts').select('title,slug,excerpt,category,published_at').eq('status','published').order('published_at',{ascending:false}).limit(3);
+  const section = document.getElementById('blog-preview');
+  if (error || !posts || !posts.length) { if (section) section.style.display = 'none'; return; }
+  grid.innerHTML = posts.map(p => `
+    <a class="blog-preview-card" href="post.html?slug=${encodeURIComponent(p.slug)}">
+      <div class="blog-preview-meta">${new Date(p.published_at).toLocaleDateString()} &middot; ${esc(p.category||'General')}</div>
+      <h3>${esc(p.title)}</h3>
+      <p>${esc(p.excerpt||'')}</p>
+    </a>`).join('');
+}
 function renderTestimonials(testimonials){
   const section = document.getElementById('testimonials');
   if (!testimonials.length) { if (section) section.style.display = 'none'; return; }

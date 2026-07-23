@@ -6,6 +6,8 @@
 <title>Admin - Murath Musni Portfolio</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@500;700;800&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
@@ -300,9 +302,10 @@ body {
           <button class="admin-tab" onclick="switchTab('skills', this)">Skills</button>
           <button class="admin-tab" onclick="switchTab('experience', this)">Experience</button>
           <button class="admin-tab" onclick="switchTab('education', this)">Education</button>
-          <button class="admin-tab" onclick="switchTab('testimonials', this)">Testimonials</button>
+         
           <button class="admin-tab" onclick="switchTab('projects', this)">Projects</button>
           <button class="admin-tab" onclick="switchTab('blog', this)">Blog</button>
+          <button class="admin-tab" onclick="switchTab('categories', this);loadCategoriesPane()">Categories</button>
           <button class="admin-tab" onclick="switchTab('messages', this)">Messages</button><button class="admin-tab" onclick="switchTab('media', this);loadMediaLibrary()">Media</button>
           <button class="admin-tab" onclick="switchTab('security', this)">Security</button>
         </div>
@@ -527,7 +530,7 @@ body {
             <input type="hidden" id="post-id">
             <div class="admin-edit-form" style="padding:0;">
               <div class="admin-input-group"><label>TITLE</label><input type="text" id="post-title" onkeyup="autoSlug()"></div>
-              <div class="admin-input-group"><label>URL SLUG</label><input type="text" id="post-slug"></div><div class="row"><div class="admin-input-group"><label>CATEGORY</label><input type="text" id="post-category" value="General"></div><div class="admin-input-group"><label>SUBCATEGORY (optional)</label><input type="text" id="post-subcategory" placeholder="e.g. Routing, IAM, Terraform"></div><div class="admin-input-group"><label>TAGS (comma separated)</label><input type="text" id="post-tags" placeholder="networking, security"></div></div>
+              <div class="admin-input-group"><label>URL SLUG</label><input type="text" id="post-slug"></div><div class="row"><div class="admin-input-group"><label>CATEGORY</label><select id="post-category" onchange="fillSubcategoryOptions()"></select></div><div class="admin-input-group"><label>SUBCATEGORY (optional)</label><select id="post-subcategory"><option value="">-- none --</option></select></div><div class="admin-input-group"><label>TAGS (comma separated)</label><input type="text" id="post-tags" placeholder="networking, security"></div></div>
               <div class="admin-input-group"><label>EXCERPT (shown on blog list)</label><textarea id="post-excerpt"></textarea></div>
               <div class="admin-input-group">
                 <label>COVER IMAGE</label>
@@ -589,6 +592,31 @@ body {
               <button class="btn-danger" onclick="clearPostForm()">Clear form</button>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- CATEGORIES -->
+      <div class="admin-pane" id="pane-categories">
+        <div class="admin-section">
+          <div class="admin-section-title">Add Category or Subcategory</div>
+          <div class="admin-card" style="padding:1.5rem;">
+            <div class="admin-edit-form" style="padding:0;">
+              <div class="row">
+                <div class="admin-input-group"><label>NAME</label><input type="text" id="cat-name" placeholder="e.g. Networking"></div>
+                <div class="admin-input-group"><label>PARENT CATEGORY (leave blank for a top-level category)</label><select id="cat-parent"><option value="">-- top level category --</option></select></div>
+              </div>
+            </div>
+            <div class="admin-btn-row">
+              <button class="btn-save" onclick="addCategory()">Add</button>
+            </div>
+          </div>
+        </div>
+        <div class="admin-section">
+          <div class="admin-section-title">All Categories</div>
+          <div class="admin-card"><table class="admin-table">
+            <thead><tr><th>Name</th><th>Parent</th><th></th></tr></thead>
+            <tbody id="categories-table-body"></tbody>
+          </table></div>
         </div>
       </div>
 
@@ -717,6 +745,7 @@ async function loadAllAdminData(){
   await loadPostsAdmin();
   await loadMessagesAdmin();
   await loadDashboardStats();
+  await loadCategoryOptionsForPostForm();
 }
 
 async function loadDashboardStats(){
@@ -843,8 +872,8 @@ function renderSkillsEditor(skills){
       <div class="list-row-head">
   <span>SKILL ${i+1}</span>
   <div style="display:flex;gap:0.4rem;">
-    <button class="admin-close" onclick="moveSkillRow(${i},-1)" ${i===0?'disabled':''}></button>
-    <button class="admin-close" onclick="moveSkillRow(${i},1)" ${i===skills.length-1?'disabled':''}></button>
+    <button class="admin-close" onclick="moveSkillRow(${i},-1)" ${i===0?'disabled':''}>&uarr;</button>
+<button class="admin-close" onclick="moveSkillRow(${i},1)" ${i===skills.length-1?'disabled':''}>&darr;</button>
     <button class="btn-danger" onclick="removeSkillRow(${i})">Remove</button>
   </div>
 </div>
@@ -883,8 +912,8 @@ function renderExperienceEditor(exp){
   <span>ROLE ${i+1}</span>
   <div style="display:flex;gap:0.4rem;">
     <button class="admin-close" onclick="moveExperienceRow(${i},-1)" ${i===0?'disabled':''}></button>
-    <button class="admin-close" onclick="moveExperienceRow(${i},1)" ${i===exp.length-1?'disabled':''}></button>
-    <button class="btn-danger" onclick="removeExperienceRow(${i})">Remove</button>
+    <button class="admin-close" onclick="moveExperienceRow(${i},-1)" ${i===0?'disabled':''}>&uarr;</button>
+<button class="admin-close" onclick="moveExperienceRow(${i},1)" ${i===exp.length-1?'disabled':''}>&darr;</button>
   </div>
 </div>
       <div class="row"><div class="admin-input-group"><label>ROLE</label><input type="text" data-f="role" value="${esc(x.role)}"></div>
@@ -921,8 +950,8 @@ function renderEducationEditor(edu){
   <span>CREDENTIAL ${i+1}</span>
   <div style="display:flex;gap:0.4rem;">
     <button class="admin-close" onclick="moveEducationRow(${i},-1)" ${i===0?'disabled':''}></button>
-    <button class="admin-close" onclick="moveEducationRow(${i},1)" ${i===edu.length-1?'disabled':''}></button>
-    <button class="btn-danger" onclick="removeEducationRow(${i})">Remove</button>
+    <button class="admin-close" onclick="moveEducationRow(${i},-1)" ${i===0?'disabled':''}>&uarr;</button>
+<button class="admin-close" onclick="moveEducationRow(${i},1)" ${i===edu.length-1?'disabled':''}>&darr;</button>
   </div>
 </div>
       <div class="admin-input-group"><label>TITLE</label><input type="text" data-f="title" value="${esc(e.title)}"></div>
@@ -1016,9 +1045,9 @@ async function loadProjectsAdmin(){
       <td>${esc(p.title)}</td><td>${esc(p.category)}</td>
       <td><span class="status-pill ${p.status==='Published'?'green':p.status==='Draft'?'orange':'blue'}">${esc(p.status)}</span></td>
       <td style="white-space:nowrap;">
-        <button class="admin-close" style="padding:6px 10px;font-size:12px;" onclick="moveProject('${p.id}',-1)" ${i===0?'disabled':''}></button>
-        <button class="admin-close" style="padding:6px 10px;font-size:12px;" onclick="moveProject('${p.id}',1)" ${i===list.length-1?'disabled':''}></button>
-        <button class="btn-save" style="padding:6px 12px;font-size:12px;" onclick='editProject(${JSON.stringify(p).replace(/'/g,"&apos;")})'>Edit</button>
+        <button class="admin-close" style="padding:6px 10px;font-size:12px;" onclick="moveProject('${p.id}',-1)" ${i===0?'disabled':''}>&uarr;</button>
+<button class="admin-close" style="padding:6px 10px;font-size:12px;" onclick="moveProject('${p.id}',1)" ${i===list.length-1?'disabled':''}>&darr;</button>
+      <button class="btn-save" style="padding:6px 12px;font-size:12px;" onclick='editProject(${JSON.stringify(p).replace(/'/g,"&apos;")})'>Edit</button>
         <button class="btn-danger" style="padding:6px 12px;font-size:12px;" onclick="deleteProject('${p.id}')">Delete</button>
       </td>
     </tr>
@@ -1133,6 +1162,73 @@ async function loadPostsAdmin(){
     </tr>
   `).join('') || '<tr><td colspan="4" style="color:var(--muted);">No posts yet.</td></tr>';
 }
+// ---- CATEGORIES ----
+let allCategories = [];
+async function fetchCategories(){
+  const { data } = await supabaseClient.from('blog_categories').select('*').order('name');
+  allCategories = data || [];
+  return allCategories;
+}
+async function loadCategoryOptionsForPostForm(){
+  await fetchCategories();
+  const topLevel = allCategories.filter(c => !c.parent);
+  const catSelect = document.getElementById('post-category');
+  if (catSelect) {
+    const current = catSelect.value;
+    catSelect.innerHTML = (topLevel.length ? topLevel : [{name:'General'}]).map(c => `<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
+    if (current) catSelect.value = current;
+    fillSubcategoryOptions();
+  }
+}
+function fillSubcategoryOptions(){
+  const catSelect = document.getElementById('post-category');
+  const subSelect = document.getElementById('post-subcategory');
+  if (!catSelect || !subSelect) return;
+  const chosen = catSelect.value;
+  const current = subSelect.value;
+  const subs = allCategories.filter(c => c.parent === chosen);
+  subSelect.innerHTML = '<option value="">-- none --</option>' + subs.map(c => `<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
+  if (current) subSelect.value = current;
+}
+function setSelectValueEnsuringOption(selectId, value){
+  const sel = document.getElementById(selectId);
+  if (!sel || !value) { if (sel) sel.value = ''; return; }
+  const exists = Array.from(sel.options).some(o => o.value === value);
+  if (!exists) { const opt = document.createElement('option'); opt.value = value; opt.textContent = value; sel.appendChild(opt); }
+  sel.value = value;
+}
+async function loadCategoriesPane(){
+  await fetchCategories();
+  const topLevel = allCategories.filter(c => !c.parent);
+  const parentSelect = document.getElementById('cat-parent');
+  if (parentSelect) parentSelect.innerHTML = '<option value="">-- top level category --</option>' + topLevel.map(c => `<option value="${esc(c.name)}">${esc(c.name)}</option>`).join('');
+  const body = document.getElementById('categories-table-body');
+  if (body) body.innerHTML = allCategories.map(c => `
+    <tr>
+      <td>${esc(c.name)}</td>
+      <td>${c.parent ? esc(c.parent) : '<span style="color:var(--muted);">— top level —</span>'}</td>
+      <td><button class="btn-danger" style="padding:6px 12px;font-size:12px;" onclick="deleteCategory('${c.id}')">Delete</button></td>
+    </tr>
+  `).join('') || '<tr><td colspan="3" style="color:var(--muted);">No categories yet. Add one above.</td></tr>';
+}
+async function addCategory(){
+  const name = document.getElementById('cat-name').value.trim();
+  const parent = document.getElementById('cat-parent').value || null;
+  if (!name) { showSave('X Category name is required'); return; }
+  const { error } = await supabaseClient.from('blog_categories').insert({ name, parent });
+  if (error) { showSave('X ' + error.message); return; }
+  document.getElementById('cat-name').value = '';
+  showSave('OK Category added');
+  await loadCategoriesPane();
+  await loadCategoryOptionsForPostForm();
+}
+async function deleteCategory(id){
+  if (!confirm('Delete this category? Existing posts using it will keep their current value.')) return;
+  await supabaseClient.from('blog_categories').delete().eq('id', id);
+  await loadCategoriesPane();
+  await loadCategoryOptionsForPostForm();
+}
+
 async function editPost(id){
   const { data: p } = await supabaseClient.from('blog_posts').select('*').eq('id', id).single();
   if (!p) return;
@@ -1140,7 +1236,11 @@ async function editPost(id){
   document.getElementById('post-title').value = p.title;
   document.getElementById('post-slug').value = p.slug;
   document.getElementById('post-slug').dataset.manual = 'true';
-  document.getElementById('post-excerpt').value = p.excerpt; document.getElementById('post-category').value = p.category || 'General'; document.getElementById('post-subcategory').value = p.subcategory || ''; document.getElementById('post-tags').value = (p.tags||[]).join(', ');
+  document.getElementById('post-excerpt').value = p.excerpt;
+  setSelectValueEnsuringOption('post-category', p.category || 'General');
+  fillSubcategoryOptions();
+  setSelectValueEnsuringOption('post-subcategory', p.subcategory || '');
+  document.getElementById('post-tags').value = (p.tags||[]).join(', ');
   document.getElementById('post-cover-url').value = p.cover_image_url || '';
   const preview = document.getElementById('cover-preview');
   if (p.cover_image_url) { preview.src = p.cover_image_url; preview.style.display = 'block'; } else { preview.style.display = 'none'; }
@@ -1153,7 +1253,9 @@ function clearPostForm(){
   document.getElementById('post-title').value = '';
   document.getElementById('post-slug').value = '';
   document.getElementById('post-slug').dataset.manual = 'false';
-  document.getElementById('post-excerpt').value = ''; document.getElementById('post-category').value = 'General'; document.getElementById('post-subcategory').value = ''; document.getElementById('post-tags').value = '';
+  document.getElementById('post-excerpt').value = '';
+  loadCategoryOptionsForPostForm();
+  document.getElementById('post-tags').value = '';
   document.getElementById('post-cover-url').value = '';
   document.getElementById('cover-preview').style.display = 'none';
   if (quill) quill.root.innerHTML = '';

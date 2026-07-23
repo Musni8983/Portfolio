@@ -188,3 +188,15 @@ alter table page_views enable row level security;
 create policy "admin read page views" on page_views for select using (auth.role() = 'authenticated');
 create policy "public read recent page views" on page_views for select using (created_at > now() - interval '5 minutes');
 create policy "public record page views" on page_views for insert with check (char_length(page_path) <= 120 and (post_slug is null or char_length(post_slug) <= 160));
+
+-- Blog categories & subcategories (for admin dropdowns on the blog editor)
+create table if not exists blog_categories (
+  id bigint generated always as identity primary key,
+  name text not null,
+  parent text,
+  created_at timestamptz not null default now(),
+  unique(name, parent)
+);
+alter table blog_categories enable row level security;
+create policy "public read categories" on blog_categories for select using (true);
+create policy "admin manage categories" on blog_categories for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
